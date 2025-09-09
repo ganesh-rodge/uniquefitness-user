@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaCamera } from "react-icons/fa";
 
 export default function LivePhoto() {
@@ -7,6 +7,12 @@ export default function LivePhoto() {
   const [error, setError] = useState("");
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+
+  useEffect(() => {
+    if (videoRef.current && stream) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [stream]);
 
   const startCamera = async () => {
     setImage(null);
@@ -17,9 +23,6 @@ export default function LivePhoto() {
           video: { facingMode: "user" },
         });
         setStream(streamData);
-        if (videoRef.current) {
-          videoRef.current.srcObject = streamData;
-        }
       } catch (err) {
         setError("Camera permission denied. Please allow camera access in your browser settings.");
         console.error(err);
@@ -56,7 +59,7 @@ export default function LivePhoto() {
           {image ? (
             <img src={image} alt="Captured" className="w-full h-full object-cover" />
           ) : stream ? (
-            <video ref={videoRef} autoPlay className="w-full h-full object-cover" />
+            <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
           ) : (
             <FaCamera className="text-gray-400 text-5xl" />
           )}
