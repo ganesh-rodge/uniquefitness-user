@@ -31,19 +31,22 @@ export default function LivePhoto() {
   };
 
   const takePhoto = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      // Set canvas size to match the video element's displayed size
-      canvas.width = video.videoWidth || 384;
-      canvas.height = video.videoHeight || 384;
-      const context = canvas.getContext("2d");
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageDataUrl = canvas.toDataURL("image/jpeg");
-      setImage(imageDataUrl);
-      stopCamera();
-    }
-  };
+  if (videoRef.current && canvasRef.current) {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+
+    canvas.width = video.videoWidth || 384;
+    canvas.height = video.videoHeight || 384;
+
+    const context = canvas.getContext("2d");
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const imageDataUrl = canvas.toDataURL("image/jpeg");
+    setImage(imageDataUrl);
+
+    // ❌ Remove stopCamera() from here
+  }
+};
 
   const stopCamera = () => {
     if (stream) {
@@ -80,11 +83,13 @@ export default function LivePhoto() {
           {stream ? "Take Photo" : "Capture Live Photo"}
         </button>
         <button
-          disabled={!image}
-          className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-full transition hover:bg-yellow-400 disabled:bg-gray-500 disabled:cursor-not-allowed"
-        >
-          Next
-        </button>
+  disabled={!image}
+  onClick={stopCamera}  // stop camera only here
+  className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-full transition hover:bg-yellow-400 disabled:bg-gray-500 disabled:cursor-not-allowed"
+>
+  Next
+</button>
+
       </div>
     </div>
   );
