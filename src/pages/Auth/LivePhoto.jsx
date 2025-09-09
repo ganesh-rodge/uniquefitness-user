@@ -34,10 +34,11 @@ export default function LivePhoto() {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      // Set canvas size to match the video element's displayed size
+      canvas.width = video.videoWidth || 384;
+      canvas.height = video.videoHeight || 384;
       const context = canvas.getContext("2d");
-      context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
       const imageDataUrl = canvas.toDataURL("image/jpeg");
       setImage(imageDataUrl);
       stopCamera();
@@ -55,11 +56,17 @@ export default function LivePhoto() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4">
       <div className="bg-[#10151F] rounded-xl shadow-lg p-8 w-full max-w-sm flex flex-col gap-4 items-center">
         <h2 className="text-white text-xl font-bold mb-4">Live Photo</h2>
-        <div className="w-48 h-48 rounded-full bg-[#232A36] border-4 border-[#EAB308] flex items-center justify-center overflow-hidden">
+        <div className="w-48 h-48 rounded-full bg-[#232A36] border-4 border-[#EAB308] flex items-center justify-center overflow-hidden relative">
           {image ? (
             <img src={image} alt="Captured" className="w-full h-full object-cover" />
           ) : stream ? (
-            <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover rounded-full"
+              style={{ background: "#232A36" }}
+            />
           ) : (
             <FaCamera className="text-gray-400 text-5xl" />
           )}
