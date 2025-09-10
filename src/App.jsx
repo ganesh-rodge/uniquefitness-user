@@ -16,6 +16,8 @@ import LivePhoto from "./pages/Auth/LivePhoto";
 import GetDetails from "./pages/Auth/GetDetails";
 import Aadhaar from "./pages/Auth/Aadhaar";
 import HeightWeight from "./pages/Auth/PhysicalDetails";
+import ChangePassword from "./pages/Auth/ChangePassword";
+import Profile from "./pages/Profile/Profile";
 
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/details" element={<GetDetails />} />
         <Route path="/physicalDetails" element={<HeightWeight />} />
+        <Route path="/changePassword" element={<ChangePassword />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );
