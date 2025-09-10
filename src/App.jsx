@@ -24,7 +24,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<LivePhoto />} />
         <Route path="/livePhoto" element={<LivePhoto />} />
         <Route path="/aadhar" element={<Aadhaar />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
