@@ -10,33 +10,45 @@ export default function App() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const intervalRef = useRef(null);
-  const [isFaceApiLoaded, setIsFaceApiLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load the face-api.js models from a CDN when the component mounts.
-  // This is crucial for the application to be self-contained.
+  // Dynamically load the face-api.js library and its models from a CDN.
   useEffect(() => {
-    const loadModels = async () => {
-      // Check if the faceapi object exists on the window.
-      if (window.faceapi) {
-        try {
-          await window.faceapi.nets.tinyFaceDetector.loadFromUri(
-            "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/models/"
-          );
-          setIsFaceApiLoaded(true);
-        } catch (err) {
-          console.error("Error loading face-api models:", err);
-          setError("Failed to load face detection models.");
-        } finally {
-          setIsLoading(false);
-        }
-      } else {
-        setError("Face detection library not available.");
+    // Create a new script element for the face-api.js library.
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js";
+    script.async = true;
+
+    script.onload = async () => {
+      // Once the library is loaded, load the face detection models.
+      try {
+        await window.faceapi.nets.tinyFaceDetector.loadFromUri(
+          "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/models/"
+        );
+        setIsLoading(false); // Models are loaded, so we're no longer loading.
+      } catch (err) {
+        console.error("Error loading face-api models:", err);
+        setError("Failed to load face detection models. Check your network connection.");
         setIsLoading(false);
       }
     };
-    loadModels();
-  }, []);
+
+    script.onerror = () => {
+      setError("Failed to load the face detection library. Check your network connection.");
+      setIsLoading(false);
+    };
+
+    // Append the script to the document body.
+    document.body.appendChild(script);
+
+    // Cleanup function to remove the script when the component unmounts.
+    return () => {
+      document.body.removeChild(script);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []); // Empty dependency array ensures this effect runs only once.
 
   // Use an effect to attach the camera stream to the video element.
   useEffect(() => {
@@ -54,7 +66,7 @@ export default function App() {
 
   // Function to start the camera and begin face detection.
   const startCamera = async () => {
-    if (!isFaceApiLoaded) {
+    if (isLoading) {
       setError("Face detection models are still loading. Please wait.");
       return;
     }
