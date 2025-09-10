@@ -1,35 +1,53 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaCamera } from "react-icons/fa";
-import * as faceapi from "face-api.js";
 
-export default function LivePhoto() {
+// The main component for our live photo capture app.
+// It handles camera access, face detection, and photo capture.
+export default function App() {
   const [stream, setStream] = useState(null);
   const [image, setImage] = useState(null);
   const [error, setError] = useState("");
-  const [faceDetected, setFaceDetected] = useState(false); // ✅ track face presence
+  const [faceDetected, setFaceDetected] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const intervalRef = useRef(null);
+  const [isFaceApiLoaded, setIsFaceApiLoaded] = useState(false);
 
-  // Load face-api.js models
+  // Load the face-api.js models from a CDN when the component mounts.
+  // This is crucial for the application to be self-contained.
   useEffect(() => {
+    // We need to wait for the face-api.js library to load via the script tag.
     const loadModels = async () => {
-      try {
-        await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
-      } catch (err) {
-        console.error("Error loading face-api models:", err);
+      // Check if the faceapi object exists on the window.
+      if (window.faceapi) {
+        try {
+          await window.faceapi.nets.tinyFaceDetector.loadFromUri(
+            "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/models/"
+          );
+          setIsFaceApiLoaded(true);
+        } catch (err) {
+          console.error("Error loading face-api models:", err);
+          setError("Failed to load face detection models.");
+        }
       }
     };
     loadModels();
   }, []);
 
-  // Attach stream to video
+  // Use an effect to attach the camera stream to the video element.
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
 
+  // Handle cleanup when the component unmounts.
+  useEffect(() => {
+    return () => {
+      stopCamera();
+    };
+  }, []);
+
+  // Function to start the camera and begin face detection.
   const startCamera = async () => {
     setImage(null);
     setError("");
@@ -42,19 +60,19 @@ export default function LivePhoto() {
         });
         setStream(streamData);
 
-        // Start live face detection loop
+        // Start a continuous loop for face detection.
         intervalRef.current = setInterval(async () => {
-          if (videoRef.current) {
-            const detections = await faceapi.detectAllFaces(
+          if (videoRef.current && isFaceApiLoaded) {
+            const detections = await window.faceapi.detectAllFaces(
               videoRef.current,
-              new faceapi.TinyFaceDetectorOptions()
+              new window.faceapi.TinyFaceDetectorOptions()
             );
-            // Check for at least one detection with a score above 0.5
+            // Check for a face with a detection score above 0.5.
             setFaceDetected(
               Array.isArray(detections) && detections.some((d) => d.score > 0.5)
             );
           }
-        }, 500); // check every 0.5s
+        }, 500); // Check every 0.5 seconds.
       } catch (err) {
         setError(
           "Camera permission denied. Please allow camera access in your browser settings."
@@ -64,7 +82,9 @@ export default function LivePhoto() {
     }
   };
 
-  const takePhoto = async () => {
+  // Function to capture a photo from the video feed.
+  const takePhoto = () => {
+    // Prevent taking a photo if no face is detected.
     if (!faceDetected) {
       setError(
         "No face detected. Please align your face in the frame and try again."
@@ -88,9 +108,11 @@ export default function LivePhoto() {
       const imageDataUrl = canvas.toDataURL("image/jpeg");
       setImage(imageDataUrl);
       setError("");
+      stopCamera(); // Stop the camera feed after the photo is taken.
     }
   };
 
+  // Function to stop the camera stream and cleanup resources.
   const stopCamera = () => {
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
@@ -104,18 +126,18 @@ export default function LivePhoto() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4 font-sans">
       <div className="bg-[#10151F] rounded-xl shadow-lg p-8 w-full max-w-sm flex flex-col gap-4 items-center">
-        <h2 className="text-white text-xl font-bold mb-4">Live Photo</h2>
+        <h2 className="text-white text-xl font-bold mb-4">Live Photo Capture</h2>
 
-        {/* Circle with dynamic border color */}
+        {/* The main circular display area for the video feed or captured image */}
         <div
           className={`w-48 h-48 rounded-full flex items-center justify-center overflow-hidden relative border-4 ${
             image
-              ? "border-[#EAB308]" // Yellow border when photo captured
+              ? "border-yellow-500" // Yellow border when photo is captured
               : faceDetected
-              ? "border-green-500"
-              : "border-red-500"
+              ? "border-green-500" // Green border when a face is detected
+              : "border-red-500" // Red border when no face is detected
           }`}
         >
           {image ? (
@@ -138,30 +160,57 @@ export default function LivePhoto() {
               style={{ background: "#232A36" }}
             />
           ) : (
-            <FaCamera className="text-gray-400 text-5xl" />
+            // Inline SVG for the camera icon.
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-gray-400 text-5xl w-12 h-12"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.894-1.788A2 2 0 0110.158 4h3.684a2 2 0 011.664.89l.894 1.788A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
           )}
         </div>
 
+        {/* Hidden canvas for drawing the video frame. */}
         <canvas ref={canvasRef} style={{ display: "none" }} />
 
         {error && (
-          <p className="text-red-500 text-sm text-center">{error}</p>
+          <p className="text-red-500 text-sm text-center font-medium">
+            {error}
+          </p>
         )}
 
         <button
           onClick={stream ? takePhoto : startCamera}
-          className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-full transition hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200"
+          className="bg-yellow-500 text-black font-bold rounded-md py-3 w-full transition-transform hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200"
         >
-          {stream ? "Take Photo" : "Capture Live Photo"}
+          {image ? "Take Another Photo" : stream ? "Take Photo" : "Start Camera"}
         </button>
 
-        <button
-          disabled={!image}
-          onClick={stopCamera}
-          className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-full transition hover:bg-yellow-400 disabled:bg-gray-500 disabled:cursor-not-allowed"
-        >
-          Next
-        </button>
+        {/* Retake button is only visible after a photo is captured. */}
+        {image && (
+          <button
+            onClick={() => {
+              setImage(null);
+              startCamera(); // Restart the camera for a new photo.
+            }}
+            className="bg-gray-700 text-white font-bold rounded-md py-3 w-full transition-transform hover:bg-gray-600 transform hover:scale-105 active:scale-95 duration-200"
+          >
+            Retake
+          </button>
+        )}
       </div>
     </div>
   );
