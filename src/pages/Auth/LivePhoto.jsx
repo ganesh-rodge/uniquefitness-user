@@ -6,10 +6,10 @@ export default function LivePhoto() {
   const [stream, setStream] = useState(null);
   const [image, setImage] = useState(null);
   const [error, setError] = useState("");
-  const [faceDetected, setFaceDetected] = useState(false); // ✅ track face presence
+  const [faceDetected, setFaceDetected] = useState(false);
+
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const intervalRef = useRef(null);
 
   // Load face-api.js models
   useEffect(() => {
@@ -23,62 +23,83 @@ export default function LivePhoto() {
     loadModels();
   }, []);
 
-  // Attach stream to video
+  // Attach stream to video element
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
 
+  // Start camera
   const startCamera = async () => {
     setImage(null);
     setError("");
-    setFaceDetected(false);
-
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       try {
         const streamData = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: "user" },
         });
         setStream(streamData);
-
-        // Start live face detection loop
-        intervalRef.current = setInterval(async () => {
-          if (videoRef.current) {
-            const detections = await faceapi.detectAllFaces(
-              videoRef.current,
-              new faceapi.TinyFaceDetectorOptions()
-            );
-            setFaceDetected(detections.length > 0);
-          }
-        }, 500); // check every 0.5s
       } catch (err) {
-        setError(
-          "Camera permission denied. Please allow camera access in your browser settings."
-        );
+        setError("Camera permission denied. Please allow camera access.");
         console.error(err);
       }
     }
   };
 
-  const takePhoto = async () => {
-    if (!faceDetected) {
-      setError("Please align your face properly in the frame.");
-      return;
+  // Stop camera
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+      setStream(null);
     }
+  };
 
+  // Detect face continuously
+  useEffect(() => {
+    let interval;
+    if (stream) {
+      interval = setInterval(async () => {
+        if (videoRef.current) {
+          const detections = await faceapi.detectAllFaces(
+            videoRef.current,
+            new faceapi.TinyFaceDetectorOptions({
+              inputSize: 160,
+              scoreThreshold: 0.4,
+            })
+          );
+          setFaceDetected(detections.length > 0);
+        }
+      }, 500);
+    }
+    return () => clearInterval(interval);
+  }, [stream]);
+
+  // Take photo
+  const takePhoto = async () => {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
 
-      const width = video.videoWidth > 0 ? video.videoWidth : 384;
-      const height = video.videoHeight > 0 ? video.videoHeight : 384;
-
-      canvas.width = width;
-      canvas.height = height;
+      canvas.width = video.videoWidth || 384;
+      canvas.height = video.videoHeight || 384;
 
       const context = canvas.getContext("2d");
-      context.drawImage(video, 0, 0, width, height);
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const detections = await faceapi.detectAllFaces(
+        canvas,
+        new faceapi.TinyFaceDetectorOptions({
+          inputSize: 160,
+          scoreThreshold: 0.4,
+        })
+      );
+
+      if (!detections || detections.length === 0) {
+        setError("No face detected. Please align your face properly.");
+        setImage(null);
+        return;
+      }
 
       const imageDataUrl = canvas.toDataURL("image/jpeg");
       setImage(imageDataUrl);
@@ -86,49 +107,24 @@ export default function LivePhoto() {
     }
   };
 
-  const stopCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      setStream(null);
-    }
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    setFaceDetected(false);
-  };
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4">
       <div className="bg-[#10151F] rounded-xl shadow-lg p-8 w-full max-w-sm flex flex-col gap-4 items-center">
         <h2 className="text-white text-xl font-bold mb-4">Live Photo</h2>
 
-        {/* Circle with dynamic border color */}
+        {/* Circle Frame */}
         <div
-          className={`w-48 h-48 rounded-full flex items-center justify-center overflow-hidden relative border-4 ${
-            image
-              ? "border-[#EAB308]" // Yellow border when photo captured
-              : faceDetected
-              ? "border-green-500"
-              : "border-red-500"
+          className={`w-48 h-48 rounded-full border-4 flex items-center justify-center overflow-hidden relative ${
+            stream ? (faceDetected ? "border-green-500" : "border-red-500") : "border-[#EAB308]"
           }`}
         >
           {image ? (
-            <img
-              src={image}
-              alt="Captured"
-              className="w-full h-full object-cover"
-            />
+            <img src={image} alt="Captured" className="w-full h-full object-cover" />
           ) : stream ? (
             <video
               ref={videoRef}
               autoPlay
               playsInline
-              onLoadedMetadata={() => {
-                if (videoRef.current) {
-                  videoRef.current.play();
-                }
-              }}
               className="absolute inset-0 w-full h-full object-cover rounded-full"
               style={{ background: "#232A36" }}
             />
@@ -139,10 +135,9 @@ export default function LivePhoto() {
 
         <canvas ref={canvasRef} style={{ display: "none" }} />
 
-        {error && (
-          <p className="text-red-500 text-sm text-center">{error}</p>
-        )}
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
+        {/* Buttons */}
         <button
           onClick={stream ? takePhoto : startCamera}
           className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-full transition hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200"
