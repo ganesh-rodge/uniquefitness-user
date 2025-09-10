@@ -11,11 +11,11 @@ export default function App() {
   const canvasRef = useRef(null);
   const intervalRef = useRef(null);
   const [isFaceApiLoaded, setIsFaceApiLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Load the face-api.js models from a CDN when the component mounts.
   // This is crucial for the application to be self-contained.
   useEffect(() => {
-    // We need to wait for the face-api.js library to load via the script tag.
     const loadModels = async () => {
       // Check if the faceapi object exists on the window.
       if (window.faceapi) {
@@ -27,7 +27,12 @@ export default function App() {
         } catch (err) {
           console.error("Error loading face-api models:", err);
           setError("Failed to load face detection models.");
+        } finally {
+          setIsLoading(false);
         }
+      } else {
+        setError("Face detection library not available.");
+        setIsLoading(false);
       }
     };
     loadModels();
@@ -49,6 +54,11 @@ export default function App() {
 
   // Function to start the camera and begin face detection.
   const startCamera = async () => {
+    if (!isFaceApiLoaded) {
+      setError("Face detection models are still loading. Please wait.");
+      return;
+    }
+
     setImage(null);
     setError("");
     setFaceDetected(false);
@@ -62,7 +72,7 @@ export default function App() {
 
         // Start a continuous loop for face detection.
         intervalRef.current = setInterval(async () => {
-          if (videoRef.current && isFaceApiLoaded) {
+          if (videoRef.current) {
             const detections = await window.faceapi.detectAllFaces(
               videoRef.current,
               new window.faceapi.TinyFaceDetectorOptions()
@@ -140,7 +150,9 @@ export default function App() {
               : "border-red-500" // Red border when no face is detected
           }`}
         >
-          {image ? (
+          {isLoading ? (
+            <p className="text-gray-400 text-sm animate-pulse">Loading models...</p>
+          ) : image ? (
             <img
               src={image}
               alt="Captured"
@@ -195,8 +207,9 @@ export default function App() {
         <button
           onClick={stream ? takePhoto : startCamera}
           className="bg-yellow-500 text-black font-bold rounded-md py-3 w-full transition-transform hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200"
+          disabled={isLoading}
         >
-          {image ? "Take Another Photo" : stream ? "Take Photo" : "Start Camera"}
+          {isLoading ? "Loading..." : image ? "Take Another Photo" : stream ? "Take Photo" : "Start Camera"}
         </button>
 
         {/* Retake button is only visible after a photo is captured. */}
