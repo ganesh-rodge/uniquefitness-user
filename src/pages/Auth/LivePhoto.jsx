@@ -1,13 +1,29 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaCamera } from "react-icons/fa";
+import * as faceapi from "face-api.js";
 
 export default function LivePhoto() {
   const [stream, setStream] = useState(null);
   const [image, setImage] = useState(null);
   const [error, setError] = useState("");
+  const [faceDetected, setFaceDetected] = useState(false); // ✅ track face presence
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const intervalRef = useRef(null);
 
+  // Load face-api.js models
+  useEffect(() => {
+    const loadModels = async () => {
+      try {
+        await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+      } catch (err) {
+        console.error("Error loading face-api models:", err);
+      }
+    };
+    loadModels();
+  }, []);
+
+  // Attach stream to video
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
@@ -17,12 +33,25 @@ export default function LivePhoto() {
   const startCamera = async () => {
     setImage(null);
     setError("");
+    setFaceDetected(false);
+
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       try {
         const streamData = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: "user" },
         });
         setStream(streamData);
+
+        // Start live face detection loop
+        intervalRef.current = setInterval(async () => {
+          if (videoRef.current) {
+            const detections = await faceapi.detectAllFaces(
+              videoRef.current,
+              new faceapi.TinyFaceDetectorOptions()
+            );
+            setFaceDetected(detections.length > 0);
+          }
+        }, 500); // check every 0.5s
       } catch (err) {
         setError(
           "Camera permission denied. Please allow camera access in your browser settings."
@@ -32,12 +61,16 @@ export default function LivePhoto() {
     }
   };
 
-  const takePhoto = () => {
+  const takePhoto = async () => {
+    if (!faceDetected) {
+      setError("Please align your face properly in the frame.");
+      return;
+    }
+
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
 
-      // Ensure valid dimensions (fallback if not ready)
       const width = video.videoWidth > 0 ? video.videoWidth : 384;
       const height = video.videoHeight > 0 ? video.videoHeight : 384;
 
@@ -49,6 +82,7 @@ export default function LivePhoto() {
 
       const imageDataUrl = canvas.toDataURL("image/jpeg");
       setImage(imageDataUrl);
+      setError("");
     }
   };
 
@@ -57,6 +91,11 @@ export default function LivePhoto() {
       stream.getTracks().forEach((track) => track.stop());
       setStream(null);
     }
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    setFaceDetected(false);
   };
 
   return (
@@ -64,7 +103,16 @@ export default function LivePhoto() {
       <div className="bg-[#10151F] rounded-xl shadow-lg p-8 w-full max-w-sm flex flex-col gap-4 items-center">
         <h2 className="text-white text-xl font-bold mb-4">Live Photo</h2>
 
-        <div className="w-48 h-48 rounded-full bg-[#232A36] border-4 border-[#EAB308] flex items-center justify-center overflow-hidden relative">
+        {/* Circle with dynamic border color */}
+        <div
+          className={`w-48 h-48 rounded-full flex items-center justify-center overflow-hidden relative border-4 ${
+            image
+              ? "border-[#EAB308]" // Yellow border when photo captured
+              : faceDetected
+              ? "border-green-500"
+              : "border-red-500"
+          }`}
+        >
           {image ? (
             <img
               src={image}
@@ -78,7 +126,7 @@ export default function LivePhoto() {
               playsInline
               onLoadedMetadata={() => {
                 if (videoRef.current) {
-                  videoRef.current.play(); // Ensure video starts
+                  videoRef.current.play();
                 }
               }}
               className="absolute inset-0 w-full h-full object-cover rounded-full"
