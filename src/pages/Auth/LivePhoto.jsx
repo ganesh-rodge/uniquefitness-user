@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 
-// The main component for our live photo capture app.
-// It handles camera access, face detection, and photo capture.
 export default function App() {
   const [stream, setStream] = useState(null);
   const [image, setImage] = useState(null);
@@ -12,59 +10,53 @@ export default function App() {
   const intervalRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Dynamically load the face-api.js library and its models from a CDN.
+  // Load face-api.js dynamically
   useEffect(() => {
-    // Create a new script element for the face-api.js library.
     const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js";
+    script.src =
+      "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js";
     script.async = true;
 
     script.onload = async () => {
-      // Once the library is loaded, load the face detection models.
       try {
         await window.faceapi.nets.tinyFaceDetector.loadFromUri(
           "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/models/"
         );
-        setIsLoading(false); // Models are loaded, so we're no longer loading.
+        setIsLoading(false);
       } catch (err) {
         console.error("Error loading face-api models:", err);
-        setError("Failed to load face detection models. Check your network connection.");
+        setError(
+          "Failed to load face detection models. Check your network connection."
+        );
         setIsLoading(false);
       }
     };
 
     script.onerror = () => {
-      setError("Failed to load the face detection library. Check your network connection.");
+      setError(
+        "Failed to load the face detection library. Check your network connection."
+      );
       setIsLoading(false);
     };
 
-    // Append the script to the document body.
     document.body.appendChild(script);
 
-    // Cleanup function to remove the script when the component unmounts.
     return () => {
       document.body.removeChild(script);
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, []); // Empty dependency array ensures this effect runs only once.
+  }, []);
 
-  // Use an effect to attach the camera stream to the video element.
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
 
-  // Handle cleanup when the component unmounts.
   useEffect(() => {
-    return () => {
-      stopCamera();
-    };
+    return () => stopCamera();
   }, []);
 
-  // Function to start the camera and begin face detection.
   const startCamera = async () => {
     if (isLoading) {
       setError("Face detection models are still loading. Please wait.");
@@ -82,19 +74,24 @@ export default function App() {
         });
         setStream(streamData);
 
-        // Start a continuous loop for face detection.
         intervalRef.current = setInterval(async () => {
           if (videoRef.current) {
             const detections = await window.faceapi.detectAllFaces(
               videoRef.current,
-              new window.faceapi.TinyFaceDetectorOptions()
+              new window.faceapi.TinyFaceDetectorOptions({
+                inputSize: 224,
+                scoreThreshold: 0.5,
+              })
             );
-            // Check for a face with a detection score above 0.5.
-            setFaceDetected(
-              Array.isArray(detections) && detections.some((d) => d.score > 0.5)
-            );
+
+            if (Array.isArray(detections) && detections.length > 0) {
+              setFaceDetected(true);
+              setError("");
+            } else {
+              setFaceDetected(false);
+            }
           }
-        }, 500); // Check every 0.5 seconds.
+        }, 200); // smoother detection
       } catch (err) {
         setError(
           "Camera permission denied. Please allow camera access in your browser settings."
@@ -104,13 +101,9 @@ export default function App() {
     }
   };
 
-  // Function to capture a photo from the video feed.
   const takePhoto = () => {
-    // Prevent taking a photo if no face is detected.
     if (!faceDetected) {
-      setError(
-        "No face detected. Please align your face in the frame and try again."
-      );
+      setError("No face detected. Please align your face in the frame and try again.");
       return;
     }
 
@@ -130,15 +123,15 @@ export default function App() {
       const imageDataUrl = canvas.toDataURL("image/jpeg");
       setImage(imageDataUrl);
       setError("");
-      stopCamera(); // Stop the camera feed after the photo is taken.
+      stopCamera();
     }
   };
 
-  // Function to stop the camera stream and cleanup resources.
   const stopCamera = () => {
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
       setStream(null);
+      if (videoRef.current) videoRef.current.srcObject = null;
     }
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -152,39 +145,32 @@ export default function App() {
       <div className="bg-[#10151F] rounded-xl shadow-lg p-8 w-full max-w-sm flex flex-col gap-4 items-center">
         <h2 className="text-white text-xl font-bold mb-4">Live Photo Capture</h2>
 
-        {/* The main circular display area for the video feed or captured image */}
+        {/* Circular video/image container */}
         <div
           className={`w-48 h-48 rounded-full flex items-center justify-center overflow-hidden relative border-4 ${
             image
-              ? "border-yellow-500" // Yellow border when photo is captured
+              ? "border-yellow-500"
               : faceDetected
-              ? "border-green-500" // Green border when a face is detected
-              : "border-red-500" // Red border when no face is detected
+              ? "border-green-500"
+              : "border-red-500"
           }`}
         >
           {isLoading ? (
             <p className="text-gray-400 text-sm animate-pulse">Loading models...</p>
           ) : image ? (
-            <img
-              src={image}
-              alt="Captured"
-              className="w-full h-full object-cover"
-            />
+            <img src={image} alt="Captured" className="w-full h-full object-cover" />
           ) : stream ? (
             <video
               ref={videoRef}
               autoPlay
               playsInline
               onLoadedMetadata={() => {
-                if (videoRef.current) {
-                  videoRef.current.play();
-                }
+                if (videoRef.current) videoRef.current.play();
               }}
               className="absolute inset-0 w-full h-full object-cover rounded-full"
               style={{ background: "#232A36" }}
             />
           ) : (
-            // Inline SVG for the camera icon.
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="text-gray-400 text-5xl w-12 h-12"
@@ -207,29 +193,29 @@ export default function App() {
           )}
         </div>
 
-        {/* Hidden canvas for drawing the video frame. */}
         <canvas ref={canvasRef} style={{ display: "none" }} />
 
-        {error && (
-          <p className="text-red-500 text-sm text-center font-medium">
-            {error}
-          </p>
-        )}
+        {error && <p className="text-red-500 text-sm text-center font-medium">{error}</p>}
 
         <button
           onClick={stream ? takePhoto : startCamera}
           className="bg-yellow-500 text-black font-bold rounded-md py-3 w-full transition-transform hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200"
           disabled={isLoading}
         >
-          {isLoading ? "Loading..." : image ? "Take Another Photo" : stream ? "Take Photo" : "Start Camera"}
+          {isLoading
+            ? "Loading..."
+            : image
+            ? "Take Another Photo"
+            : stream
+            ? "Take Photo"
+            : "Start Camera"}
         </button>
 
-        {/* Retake button is only visible after a photo is captured. */}
         {image && (
           <button
             onClick={() => {
               setImage(null);
-              startCamera(); // Restart the camera for a new photo.
+              startCamera();
             }}
             className="bg-gray-700 text-white font-bold rounded-md py-3 w-full transition-transform hover:bg-gray-600 transform hover:scale-105 active:scale-95 duration-200"
           >
