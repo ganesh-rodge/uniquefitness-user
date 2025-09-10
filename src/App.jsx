@@ -13,13 +13,25 @@ import Contact from "./pages/Screens/Contact";
 import Privacy from "./pages/Screens/Privacy";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import LivePhoto from "./pages/Auth/LivePhoto";
+import GetDetails from "./pages/Auth/GetDetails";
+import Aadhaar from "./pages/Auth/Aadhaar";
+import HeightWeight from "./pages/Auth/PhysicalDetails";
+
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LivePhoto />} />
-        <Route path="/ForgotPassword" element={<Footer />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/livePhoto" element={<LivePhoto />} />
+        <Route path="/aadhar" element={<Aadhaar />} />
+        <Route path="/forgotPassword" element={<ForgotPassword />} />
+        <Route path="/ResetPassword" element={<ResetPassword />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/details" element={<GetDetails />} />
+        <Route path="/physicalDetails" element={<HeightWeight />} />
       </Routes>
     </BrowserRouter>
   );
