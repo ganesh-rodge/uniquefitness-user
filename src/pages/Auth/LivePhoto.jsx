@@ -19,9 +19,8 @@ export default function App() {
 
     script.onload = async () => {
       try {
-        await window.faceapi.nets.tinyFaceDetector.loadFromUri(
-          "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/models/"
-        );
+        await window.faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+
         setIsLoading(false);
       } catch (err) {
         console.error("Error loading face-api models:", err);
