@@ -37,7 +37,7 @@ export default function Login() {
           placeholder="Enter your password"
           className="bg-[#232A36] text-white rounded-md px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-yellow-400"
         />
-        < Button content="Login" />
+        < Button content="Login" onClick={handleLogin} />
         <div className="flex justify-between items-center mt-2 text-sm">
           <Link to="/forgot-password" className="text-white hover:underline">
             Forgot Password?

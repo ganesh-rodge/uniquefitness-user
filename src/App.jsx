@@ -1,67 +1,86 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { Suspense, lazy } from "react";
+import Loader from "./components/Loader";
 
 
-import Login from "./pages/Auth/Login";
-import ForgotPassword from "./pages/Auth/ForgotPassword";
-import About from "./pages/Screens/About";
-import Contact from "./pages/Screens/Contact";
-import Privacy from "./pages/Screens/Privacy";
-import ResetPassword from "./pages/Auth/ResetPassword";
-import LivePhoto from "./pages/Auth/LivePhoto";
-import GetDetails from "./pages/Auth/GetDetails";
-import Aadhaar from "./pages/Auth/Aadhaar";
-import HeightWeight from "./pages/Auth/PhysicalDetails";
-import ChangePassword from "./pages/Auth/ChangePassword";
-import Profile from "./pages/Profile/Profile";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import Announcements from "./pages/Announcements/Announcements";
-import AnnouncementDetails from "./pages/Announcements/AnnouncementDetails";
-import WeightHistory from "./pages/Dashboard/WeightHistory";
-import SelectPlan from "./pages/Payments/SelectPlan";
-import SelectGroups from "./pages/Workouts/SelectGroups";
-import CreateSchedule from "./pages/Workouts/CreateSchedule";
-import WorkoutDetail from "./pages/Workouts/WorkoutDetail";
-import CreateDiet from "./pages/Dietplans/CreateDiet";
-import Dietplan from "./pages/Dietplans/Dietplan";
-import DietDetail from "./pages/Dietplans/DeitDetail";
-import Register from "./pages/Auth/Register";
-import OtpVerify from "./pages/Auth/OtpVerify";
+const Login = lazy(() => import("./pages/Auth/Login"));
+const Register = lazy(() => import("./pages/Auth/Register"));
+const ForgotPassword = lazy(() => import("./pages/Auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/Auth/ResetPassword"));
+const LivePhoto = lazy(() => import("./pages/Auth/LivePhoto"));
+const Aadhaar = lazy(() => import("./pages/Auth/Aadhaar"));
+const GetDetails = lazy(() => import("./pages/Auth/GetDetails"));
+const HeightWeight = lazy(() => import("./pages/Auth/PhysicalDetails"));
+const ChangePassword = lazy(() => import("./pages/Auth/ChangePassword"));
+
+const About = lazy(() => import("./pages/Screens/About"));
+const Contact = lazy(() => import("./pages/Screens/Contact"));
+const Privacy = lazy(() => import("./pages/Screens/Privacy"));
+
+const Dashboard = lazy(() => import("./pages/Dashboard/Dashboard"));
+const WeightHistory = lazy(() => import("./pages/Dashboard/WeightHistory"));
+
+const Announcements = lazy(() => import("./pages/Announcements/Announcements"));
+const AnnouncementDetails = lazy(() => import("./pages/Announcements/AnnouncementDetails"));
+
+const SelectPlan = lazy(() => import("./pages/Payments/SelectPlan"));
+const SelectGroups = lazy(() => import("./pages/Workouts/SelectGroups"));
+const CreateSchedule = lazy(() => import("./pages/Workouts/CreateSchedule"));
+const WorkoutDetail = lazy(() => import("./pages/Workouts/WorkoutDetail"));
+
+const CreateDiet = lazy(() => import("./pages/Dietplans/CreateDiet"));
+const Dietplan = lazy(() => import("./pages/Dietplans/Dietplan"));
+const DietDetail = lazy(() => import("./pages/Dietplans/DeitDetail"));
+
+const Profile = lazy(() => import("./pages/Profile/Profile"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/announcements" element={<Announcements />} />
-          <Route path="/announcementDetails" element={<AnnouncementDetails />} />
-          <Route path="/weight-records" element={<WeightHistory />} />
-          <Route path="/select-plan" element={<SelectPlan />} />
-          <Route path="/select-groups" element={<SelectGroups />} />
-          <Route path="/create-schedule" element={<CreateSchedule />} />
-          <Route path="/workout" element={<WorkoutDetail/>} />
-          <Route path="/create-diet" element={<CreateDiet/>} />
-          <Route path="/diet" element={<Dietplan/>} />
-          <Route path="/diet-detail" element={<DietDetail/>} />
-          <Route path="/myProfile" element={<Profile />} />
-        </Route>
+      <Suspense fallback={<Loader/>}>
+        <Routes>
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<Layout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/announcements" element={<Announcements />} />
+              <Route path="/announcementDetails" element={<AnnouncementDetails />} />
+              <Route path="/weight-records" element={<WeightHistory />} />
+              <Route path="/select-plan" element={<SelectPlan />} />
+              <Route path="/select-groups" element={<SelectGroups />} />
+              <Route path="/create-schedule" element={<CreateSchedule />} />
+              <Route path="/workout-detail" element={<WorkoutDetail/>} />
+              <Route path="/create-diet" element={<CreateDiet/>} />
+              <Route path="/diet-plan" element={<Dietplan/>} />
+              <Route path="/diet-detail" element={<DietDetail/>} />
+              <Route path="/myProfile" element={<Profile />} />
+            </Route>
+          </Route>
 
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/livePhoto" element={<LivePhoto />} />
-        <Route path="/aadhar" element={<Aadhaar />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/ResetPassword" element={<ResetPassword />} />
-        <Route path="/details" element={<GetDetails />} />
-        <Route path="/physicalDetails" element={<HeightWeight />} />
-        <Route path="/changePassword" element={<ChangePassword />} />
+          {/* Public Routes */}
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/livePhoto" element={<LivePhoto />} />
+          <Route path="/aadhar" element={<Aadhaar />} />
+          <Route path="/forgotPassword" element={<ForgotPassword />} />
+          <Route path="/ResetPassword" element={<ResetPassword />} />
+          <Route path="/details" element={<GetDetails />} />
+          <Route path="/physicalDetails" element={<HeightWeight />} />
+          <Route path="/changePassword" element={<ChangePassword />} />
+          <Route element={<Layout />}>
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy" element={<Privacy />} />
+          </Route>
 
-      </Routes>
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

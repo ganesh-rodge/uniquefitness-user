@@ -1,12 +1,12 @@
 import { FaUserCircle, FaHome, FaBullhorn, FaDumbbell, FaAppleAlt } from "react-icons/fa";
 import { useState } from "react";
 import { FiMenu } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 export default function Navbar() {
 	const [menuOpen, setMenuOpen] = useState(false);
 	return (
-	<nav className="w-full flex justify-center items-center py-4 bg-transparent fixed top-0 left-0 z-50">
+	<nav className="w-full flex justify-center items-center  bg-[#181A1B] pt-4 sticky top-0 left-0 z-50">
 			<div
 				className="flex items-center justify-between w-[95%] px-5 py-1.5 rounded-3xl"
 				style={{
@@ -16,10 +16,10 @@ export default function Navbar() {
 				<img src="/logo.png" alt="Logo" className="h-11  rounded-xl mr-4 ml-2" />
 				{/* Desktop Menu */}
 				<div className="flex-1 hidden md:flex justify-center gap-8">
-					<Link to="/dashboard" className="nav-link text-white transition-all duration-200 hover:text-[#EAB308] hover:scale-110">Home</Link>
-					<Link to="/announcements" className="nav-link text-white transition-all duration-200 hover:text-[#EAB308] hover:scale-110">Announcements</Link>
-					<Link to="/workout" className="nav-link text-white transition-all duration-200 hover:text-[#EAB308] hover:scale-110">Workout</Link>
-					<Link to="/diet" className="nav-link text-white transition-all duration-200 hover:text-[#EAB308] hover:scale-110">Diet</Link>
+					<NavLink to="/dashboard" className="nav-link text-white transition-all duration-200 hover:text-[#EAB308] hover:scale-110">Home</NavLink>
+					<NavLink to="/announcements" className="nav-link text-white transition-all duration-200 hover:text-[#EAB308] hover:scale-110">Announcements</NavLink>
+					<NavLink to="/workout" className="nav-link text-white transition-all duration-200 hover:text-[#EAB308] hover:scale-110">Workout</NavLink>
+					<NavLink to="/diet" className="nav-link text-white transition-all duration-200 hover:text-[#EAB308] hover:scale-110">Diet</NavLink>
 				</div>
 				<FaUserCircle className="text-white text-2xl ml-4 hidden md:block" />
 				{/* Hamburger Icon for Mobile */}

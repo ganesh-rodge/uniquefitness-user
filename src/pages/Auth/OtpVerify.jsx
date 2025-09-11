@@ -1,11 +1,12 @@
 import React, { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export default function OtpVerify() {
   const [otp, setOtp] = useState("");
+  const navigate = useNavigate();
 
   const handleVerify = (e) => {
-    e.preventDefault();
-    // Handle OTP verification logic
+    navigate("/reset-password")
   };
 
   return (
@@ -35,6 +36,7 @@ export default function OtpVerify() {
         <button
           type="submit"
           className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-full transition hover:bg-yellow-400"
+          onClick={handleVerify}
         >
           Verify OTP
         </button>

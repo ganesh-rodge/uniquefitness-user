@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import ButtonFull from "../../components/ButtonFull";
+import { useNavigate } from "react-router-dom";
 
 function AnimatedInput({ id, type, placeholder }) {
   const [focused, setFocused] = useState(false);
   const [value, setValue] = useState("");
+  
 
   return (
     <div className="relative mb-2">
@@ -28,6 +30,13 @@ function AnimatedInput({ id, type, placeholder }) {
 }
 
 export default function ForgotPassword() {
+
+  const navigate = useNavigate();
+
+  function handleSend(){
+    navigate("/otp-verify")
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4">
       <div className="w-full flex flex-col items-center">
@@ -48,7 +57,7 @@ export default function ForgotPassword() {
           Email Address
         </label>
         <AnimatedInput id="email" type="email" placeholder="you@example.com" />
-        <ButtonFull content="Send OTP" />
+        <ButtonFull content="Send OTP" onClick={handleSend}/>
       </div>
     </div>
   );

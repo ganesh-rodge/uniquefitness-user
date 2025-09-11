@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import ButtonFull from "../../components/ButtonFull";
+import {  useNavigate } from "react-router-dom";
 
 function AnimatedInput({ id, type, placeholder }) {
   const [focused, setFocused] = useState(false);
   const [value, setValue] = useState("");
+
+  
 
   return (
     <div className="relative mb-2">
@@ -34,6 +37,12 @@ export default function ResetPassword() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const navigate = useNavigate()
+
+  function handleReset(){
+    navigate("/dashboard")
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4">
       <img
@@ -56,12 +65,12 @@ export default function ResetPassword() {
           <AnimatedInput id="otp" type="text" placeholder="Enter OTP" />
           <AnimatedInput id="newPassword" type="password" placeholder="New Password" />
           <AnimatedInput id="confirmPassword" type="password" placeholder="Confirm New Password" />
-          <button
-            type="submit"
-            className="bg-[#EAB308] text-black font-bold rounded-md py-2 transition hover:bg-yellow-400 transform hover:scale-110 active:scale-95 duration-200 w-full mt-2"
-          >
-            Reset Password
-          </button>
+          <ButtonFull
+            content={"Reset Password"}
+            onClick={handleReset}
+          />
+           
+          
         </form>
       </div>
     </div>
