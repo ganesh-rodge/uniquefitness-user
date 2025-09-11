@@ -1,8 +1,16 @@
 import React from "react";
 import Button from "../../components/ButtonFull";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
+
+  function handleLogin(){
+    navigate("/dashboard")
+  }
   return (
+
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4">
       <h2 className="text-white text-4xl mb-2 mt-2 text-center">Welcome to</h2>
       <img
@@ -31,12 +39,12 @@ export default function Login() {
         />
         < Button content="Login" />
         <div className="flex justify-between items-center mt-2 text-sm">
-          <a href="#" className="text-white hover:underline">
+          <Link to="/forgot-password" className="text-white hover:underline">
             Forgot Password?
-          </a>
-          <a href="#" className="text-[#EAB308] hover:underline font-semibold">
+          </Link>
+          <Link to="/register" className="text-[#EAB308] hover:underline font-semibold">
             Join Us
-          </a>
+          </Link>
         </div>
       </div>
     </div>
