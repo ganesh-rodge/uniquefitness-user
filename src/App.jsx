@@ -31,6 +31,7 @@ import Dietplan from "./pages/Dietplans/Dietplan";
 import DietDetail from "./pages/Dietplans/DeitDetail";
 import Register from "./pages/Auth/Register";
 
+
 function App() {
   return (
     <BrowserRouter>
