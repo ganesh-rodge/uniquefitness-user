@@ -44,11 +44,11 @@ function App() {
       <Suspense fallback={<Loader/>}>
         <Routes>
           {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
+          {/* <Route element={<ProtectedRoute />}> */}
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/announcements" element={<Announcements />} />
-              <Route path="/announcementDetails" element={<AnnouncementDetails />} />
+              <Route path="/announcement-details" element={<AnnouncementDetails />} />
               <Route path="/weight-records" element={<WeightHistory />} />
               <Route path="/select-plan" element={<SelectPlan />} />
               <Route path="/select-groups" element={<SelectGroups />} />
@@ -58,7 +58,7 @@ function App() {
               <Route path="/diet-plan" element={<Dietplan/>} />
               <Route path="/diet-detail" element={<DietDetail/>} />
               <Route path="/myProfile" element={<Profile />} />
-            </Route>
+            {/* </Route> */}
           </Route>
 
           {/* Public Routes */}

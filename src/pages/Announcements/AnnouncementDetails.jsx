@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 
 export default function AnnouncementDetails() {
   return (
-    <div className="min-h-screen bg-[#181A1B] flex flex-col items-center justify-center px-2 py-8">
-      <div className="border-4 border-[#2196F3] rounded-xl p-6 w-full max-w-lg mx-auto">
+    <div className="min-h-screen bg-[#181A1B] flex  justify-center px-2 py-8">
+      <div className=" rounded-xl p-6 w-full max-w-lg mx-auto">
         <Link to="/announcements" className="bg-[#10151F] text-[#EAB308] font-semibold rounded-md px-4 py-3 flex items-center gap-2 mb-6 hover:bg-[#232A36] transition">
           <FaArrowLeft /> Back to Announcements
         </Link>

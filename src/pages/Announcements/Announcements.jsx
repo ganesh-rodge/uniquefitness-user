@@ -27,7 +27,7 @@ const announcements = [
 export default function Announcements() {
 	return (
 		<div className="min-h-screen bg-[#181A1B] flex flex-col items-center justify-center px-2 py-8">
-			<div className="border-4 border-[#2196F3] rounded-xl p-6 w-full max-w-lg mx-auto">
+			<div className="rounded-xl p-6 w-full max-w-lg mx-auto">
 				<h1 className="text-white text-3xl font-bold mb-2 flex items-center gap-2">
 					<FaBullhorn className="text-[#EAB308]" /> Announcements
 				</h1>

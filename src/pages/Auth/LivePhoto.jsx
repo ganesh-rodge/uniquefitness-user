@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 
-export default function App() {
+export default function LivePhoto() {
   const [stream, setStream] = useState(null);
   const [image, setImage] = useState(null);
   const [error, setError] = useState("");
