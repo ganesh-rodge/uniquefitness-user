@@ -30,11 +30,14 @@ function AnimatedInput({ id, type, placeholder }) {
 export default function ForgotPassword() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4">
-      <img
-        src="/logoFull.jpeg"
-        alt="Unique Health & Fitness Logo"
-        className="w-64 h-64 object-contain mb-6 mx-auto"
-      />
+      <div className="w-full flex flex-col items-center">
+        <img
+          src="/logoFull.jpeg"
+          alt="Unique Health & Fitness Logo"
+          className="w-50 h-50 object-contain mb-6 mx-auto"
+          style={{ width: 200, height: 200 }}
+        />
+      </div>
       <div className="bg-[#10151F] rounded-xl shadow-lg p-8 w-full max-w-md flex flex-col gap-4 items-center">
         <h2 className="text-white text-2xl font-bold mb-2 text-center">Forgot Password</h2>
         <p className="text-white text-center mb-4 text-base">

@@ -18,13 +18,24 @@ import Aadhaar from "./pages/Auth/Aadhaar";
 import HeightWeight from "./pages/Auth/PhysicalDetails";
 import ChangePassword from "./pages/Auth/ChangePassword";
 import Profile from "./pages/Profile/Profile";
-
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Announcements from "./pages/Announcements/Announcements";
+import AnnouncementDetails from "./pages/Announcements/AnnouncementDetails";
+import WeightHistory from "./pages/Dashboard/WeightHistory";
+import SelectPlan from "./pages/Payments/SelectPlan";
+import SelectGroups from "./pages/Workouts/SelectGroups";
+import CreateSchedule from "./pages/Workouts/CreateSchedule";
+import WorkoutDetail from "./pages/Workouts/WorkoutDetail";
+import CreateDiet from "./pages/Dietplans/CreateDiet";
+import Dietplan from "./pages/Dietplans/Dietplan";
+import DietDetail from "./pages/Dietplans/DeitDetail";
+import Register from "./pages/Auth/Register";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LivePhoto />} />
+        <Route path="/" element={<Login />} />
         <Route path="/livePhoto" element={<LivePhoto />} />
         <Route path="/aadhar" element={<Aadhaar />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
@@ -35,7 +46,21 @@ function App() {
         <Route path="/details" element={<GetDetails />} />
         <Route path="/physicalDetails" element={<HeightWeight />} />
         <Route path="/changePassword" element={<ChangePassword />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/myProfile" element={<Profile />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/announcements" element={<Announcements />} />
+        <Route path="/announcementDetails" element={<AnnouncementDetails />} />
+        <Route path="/weight-records" element={<WeightHistory />} />
+        <Route path="/select-plan" element={<SelectPlan />} />
+        <Route path="/select-groups" element={<SelectGroups />} />
+        <Route path="/create-schedule" element={<CreateSchedule />} />
+        <Route path="/workout-detail" element={<WorkoutDetail/>} />
+        <Route path="/create-diet" element={<CreateDiet/>} />
+        <Route path="/diet-plan" element={<Dietplan/>} />
+        <Route path="/diet-detail" element={<DietDetail/>} />
+        <Route path="/register" element={<Register/>} />
+        
+        
       </Routes>
     </BrowserRouter>
   );

@@ -1,45 +1,7 @@
 import React, { useState } from "react";
-import { FaRulerVertical, FaWeight, FaEye, FaEyeSlash } from "react-icons/fa";
-
-function AnimatedInput({ id, type, placeholder, name, value, onChange, icon: Icon }) {
-  const [focused, setFocused] = useState(false);
-  const [show, setShow] = useState(false);
-  const isPassword = type === "password";
-  return (
-    <div className="relative mb-2 w-full flex items-center">
-      {Icon && <Icon className="absolute left-2 text-[#EAB308] text-lg" />}
-      <input
-        id={id}
-        name={name}
-        type={isPassword && show ? "text" : type}
-        value={value}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        onChange={onChange}
-        className="bg-[#232A36] text-white rounded-md px-9 py-2 w-full focus:outline-none focus:ring-2 focus:ring-yellow-400 pr-10"
-        required
-      />
-      <span
-        className={`absolute left-9 top-2 text-gray-400 pointer-events-none transition-all duration-300 ${focused || value ? "opacity-0 -translate-y-2" : "opacity-100"}`}
-      >
-        {placeholder}
-      </span>
-      {isPassword && (
-        <button
-          type="button"
-          tabIndex={-1}
-          onClick={() => setShow((s) => !s)}
-          className="absolute right-2 text-gray-400 hover:text-[#EAB308] focus:outline-none"
-        >
-          {show ? <FaEyeSlash /> : <FaEye />}
-        </button>
-      )}
-    </div>
-  );
-}
 
 export default function HeightWeight() {
-  const [form, setForm] = useState({ height: "", weight: "", gender: "", password: "" });
+  const [form, setForm] = useState({ height: "", weight: "", gender: "male" });
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -65,37 +27,28 @@ export default function HeightWeight() {
         <label className="text-white text-sm font-semibold w-full" htmlFor="height">
           Height
         </label>
-        <AnimatedInput
+        <input
           id="height"
           name="height"
           type="text"
           value={form.height}
           onChange={handleChange}
           placeholder="e.g. 5.8 ft"
-          icon={FaRulerVertical}
+          className="bg-[#232A36] text-white rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          required
         />
         <label className="text-white text-sm font-semibold w-full" htmlFor="weight">
           Weight
         </label>
-        <AnimatedInput
+        <input
           id="weight"
           name="weight"
           type="text"
           value={form.weight}
           onChange={handleChange}
           placeholder="e.g. 70 kg"
-          icon={FaWeight}
-        />
-        <label className="text-white text-sm font-semibold w-full" htmlFor="password">
-          Password
-        </label>
-        <AnimatedInput
-          id="password"
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          placeholder="Enter password"
+          className="bg-[#232A36] text-white rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          required
         />
         <label className="text-white text-sm font-semibold w-full" htmlFor="gender">
           Gender
