@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Button from "../../components/ButtonFull";
 
 export default function Register() {
   const [email, setEmail] = useState("");

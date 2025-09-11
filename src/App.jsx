@@ -30,6 +30,7 @@ import CreateDiet from "./pages/Dietplans/CreateDiet";
 import Dietplan from "./pages/Dietplans/Dietplan";
 import DietDetail from "./pages/Dietplans/DeitDetail";
 import Register from "./pages/Auth/Register";
+import OtpVerify from "./pages/Auth/OtpVerify";
 
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
         <Route path="/diet-plan" element={<Dietplan/>} />
         <Route path="/diet-detail" element={<DietDetail/>} />
         <Route path="/register" element={<Register/>} />
+        <Route path="/otp-verify" element={<OtpVerify/>} />
         
         
       </Routes>
