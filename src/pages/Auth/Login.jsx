@@ -1,15 +1,23 @@
 import React from "react";
 import Button from "../../components/ButtonFull";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { loginUser } from "../../api/api";
 import { useState } from "react";
+import Loader from "../../components/Loader";
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate();
+
+  const token = localStorage.getItem("accessToken");
+
+  if(token){
+    return <Navigate to="/dashboard" replace/>
+  }
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,6 +29,8 @@ export default function Login() {
 
 
     try {
+      setLoading(true);
+
       const res = await loginUser({
         email: formData.email,
         password: formData.password,
@@ -34,8 +44,16 @@ export default function Login() {
     } catch (err) {
       console.log(err.response); // debug
       setMessage(err.response?.data?.message || "Login failed ❌");
+    } finally{
+      setLoading(false)
     }
   };
+
+  if(loading){
+    return(
+        <Loader />
+    )
+  }
 
   return (
 

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { FaCamera, FaPencilAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+
 
 const initialProfile = {
   name: "John Doe",
@@ -16,6 +18,31 @@ export default function Profile() {
   const [profile, setProfile] = useState(initialProfile);
   const [editField, setEditField] = useState("");
   const [editValue, setEditValue] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleLogout = async() =>{
+    try{
+      const token = localStorage.getItem("accessToken")
+
+      await fetch("https://uniquefitness.onrender.com/api/v1/user/logout", {
+        method: 'POST',
+        headers: {
+          "Content-Type" : "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      })
+
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("userData");
+
+      navigate("/", { replace: true });
+    }
+    catch(error){
+      console.log(error?.response?.data)
+    }
+  }
 
   const handleEdit = (field) => {
     setEditField(field);
@@ -112,7 +139,8 @@ export default function Profile() {
           </div>
         </div>
         <div className="flex gap-4 w-full mt-6">
-          <button className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-1/2 transition hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200">
+          <button className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-1/2 transition hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200 cursor-pointer"
+          onClick={handleLogout}>
             Log Out
           </button>
           <button className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-1/2 transition hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200">

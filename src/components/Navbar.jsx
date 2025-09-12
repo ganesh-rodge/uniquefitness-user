@@ -2,9 +2,11 @@ import { FaUserCircle, FaHome, FaBullhorn, FaDumbbell, FaAppleAlt } from "react-
 import { useState } from "react";
 import { FiMenu } from "react-icons/fi";
 import { Link, NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
 	const [menuOpen, setMenuOpen] = useState(false);
+	const navigate = useNavigate();
 	return (
 	<nav className="w-full flex justify-center items-center  bg-[#181A1B] pt-4 sticky top-0 left-0 z-50">
 			<div
@@ -21,7 +23,7 @@ export default function Navbar() {
 					<NavLink to="/workout" className="nav-link text-white transition-all duration-200 hover:text-[#EAB308] hover:scale-110">Workout</NavLink>
 					<NavLink to="/diet" className="nav-link text-white transition-all duration-200 hover:text-[#EAB308] hover:scale-110">Diet</NavLink>
 				</div>
-				<FaUserCircle className="text-white text-2xl ml-4 hidden md:block" />
+				<FaUserCircle className="text-white text-2xl ml-4 hidden md:block cursor-pointer" onClick={()=>navigate("/profile")}/>
 				{/* Hamburger Icon for Mobile */}
 				<button
 					className="md:hidden text-2xl ml-4 focus:outline-none"
@@ -39,21 +41,21 @@ export default function Navbar() {
 						className="md:hidden absolute top-20 left-0 right-0 mx-auto w-[96%] max-w-md flex items-end flex-col gap-4 bg-gradient-to-r from-[#5a5a3a] to-[#3a4a3a] p-5 rounded-xl z-50"
 					>
 						<div className="flex flex-col items-start w-full">
-							<a href="#home" className="nav-link-mobile flex items-center gap-3 text-white text-lg font-medium text-left w-full px-4 py-2 rounded-lg transition-all duration-200 hover:text-[#EAB308] hover:bg-[#232A36] hover:scale-105" onClick={() => setMenuOpen(false)}>
+							<Link to="/home" className="nav-link-mobile flex items-center gap-3 text-white text-lg font-medium text-left w-full px-4 py-2 rounded-lg transition-all duration-200 hover:text-[#EAB308] hover:bg-[#232A36] hover:scale-105" onClick={() => setMenuOpen(false)}>
 								<FaHome className="text-xl" /> Home
-							</a>
-							<a href="#announcements" className="nav-link-mobile flex items-center gap-3 text-white text-lg font-medium text-left w-full px-4 py-2 rounded-lg transition-all duration-200 hover:text-[#EAB308] hover:bg-[#232A36] hover:scale-105" onClick={() => setMenuOpen(false)}>
+							</Link>
+							<Link to="/announcements" className="nav-link-mobile flex items-center gap-3 text-white text-lg font-medium text-left w-full px-4 py-2 rounded-lg transition-all duration-200 hover:text-[#EAB308] hover:bg-[#232A36] hover:scale-105" onClick={() => setMenuOpen(false)}>
 								<FaBullhorn className="text-xl" /> Announcements
-							</a>
-							<a href="#workout" className="nav-link-mobile flex items-center gap-3 text-white text-lg font-medium text-left w-full px-4 py-2 rounded-lg transition-all duration-200 hover:text-[#EAB308] hover:bg-[#232A36] hover:scale-105" onClick={() => setMenuOpen(false)}>
+							</Link>
+							<Link to="/workout" className="nav-link-mobile flex items-center gap-3 text-white text-lg font-medium text-left w-full px-4 py-2 rounded-lg transition-all duration-200 hover:text-[#EAB308] hover:bg-[#232A36] hover:scale-105" onClick={() => setMenuOpen(false)}>
 								<FaDumbbell className="text-xl" /> Workout
-							</a>
-							<a href="#diet" className="nav-link-mobile flex items-center gap-3 text-white text-lg font-medium text-left w-full px-4 py-2 rounded-lg transition-all duration-200 hover:text-[#EAB308] hover:bg-[#232A36] hover:scale-105" onClick={() => setMenuOpen(false)}>
+							</Link>
+							<Link to="/diet" className="nav-link-mobile flex items-center gap-3 text-white text-lg font-medium text-left w-full px-4 py-2 rounded-lg transition-all duration-200 hover:text-[#EAB308] hover:bg-[#232A36] hover:scale-105" onClick={() => setMenuOpen(false)}>
 								<FaAppleAlt className="text-xl" /> Diet
-							</a>
-							<a href="#profile" className="nav-link-mobile flex items-center gap-3 text-white text-lg font-medium text-left w-full px-4 py-2 rounded-lg transition-all duration-200 hover:text-[#EAB308] hover:bg-[#232A36] hover:scale-105" onClick={() => setMenuOpen(false)}>
-								<FaUserCircle className="text-xl" /> Profile
-							</a>
+							</Link>
+							<Link to="/profile" className="nav-link-mobile flex items-center gap-3 text-white text-lg font-medium text-left w-full px-4 py-2 rounded-lg transition-all duration-200 hover:text-[#EAB308] hover:bg-[#232A36] hover:scale-105" onClick={() => setMenuOpen(false)}>
+								<FaUserCircle className="text-xl" onClick={()=>navigate("/profile")}/> Profile
+							</Link>
 						</div>
 					</div>
 				</>
