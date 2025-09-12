@@ -1,8 +1,13 @@
+import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
-export default function ProtectedRoute(){
-    const isLoggedIn = localStorage.getItem("token"); 
-  // You can replace this with your real auth check (context, redux, etc.)
+export default function ProtectedRoute() {
+  const token = localStorage.getItem("accessToken");
 
-  return isLoggedIn ? <Outlet /> : <Navigate to="/" replace />;
+  // If no token → redirect to login
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Outlet />; // Allow access to nested routes
 }
