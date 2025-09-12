@@ -41,7 +41,7 @@ export default function Navbar() {
 						className="md:hidden absolute top-20 left-0 right-0 mx-auto w-[96%] max-w-md flex items-end flex-col gap-4 bg-gradient-to-r from-[#5a5a3a] to-[#3a4a3a] p-5 rounded-xl z-50"
 					>
 						<div className="flex flex-col items-start w-full">
-							<Link to="/home" className="nav-link-mobile flex items-center gap-3 text-white text-lg font-medium text-left w-full px-4 py-2 rounded-lg transition-all duration-200 hover:text-[#EAB308] hover:bg-[#232A36] hover:scale-105" onClick={() => setMenuOpen(false)}>
+							<Link to="/dashboard" className="nav-link-mobile flex items-center gap-3 text-white text-lg font-medium text-left w-full px-4 py-2 rounded-lg transition-all duration-200 hover:text-[#EAB308] hover:bg-[#232A36] hover:scale-105" onClick={() => setMenuOpen(false)}>
 								<FaHome className="text-xl" /> Home
 							</Link>
 							<Link to="/announcements" className="nav-link-mobile flex items-center gap-3 text-white text-lg font-medium text-left w-full px-4 py-2 rounded-lg transition-all duration-200 hover:text-[#EAB308] hover:bg-[#232A36] hover:scale-105" onClick={() => setMenuOpen(false)}>

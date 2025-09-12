@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaCamera, FaPencilAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import Loader from "../../components/Loader";
 
 
 const initialProfile = {
@@ -18,11 +19,13 @@ export default function Profile() {
   const [profile, setProfile] = useState(initialProfile);
   const [editField, setEditField] = useState("");
   const [editValue, setEditValue] = useState("");
+  const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate();
 
   const handleLogout = async() =>{
     try{
+      setLoading(true)
       const token = localStorage.getItem("accessToken")
 
       await fetch("https://uniquefitness.onrender.com/api/v1/user/logout", {
@@ -41,7 +44,15 @@ export default function Profile() {
     }
     catch(error){
       console.log(error?.response?.data)
+    } finally{
+      setLoading(false)
     }
+  }
+
+  if(loading){
+    return(
+      <Loader />
+    )
   }
 
   const handleEdit = (field) => {
