@@ -1,62 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../../components/ButtonFull";
-import { useNavigate, Navigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Navigate, Link } from "react-router-dom";
 import { loginUser } from "../../api/api";
-import { useState } from "react";
 import Loader from "../../components/Loader";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
-
   const token = localStorage.getItem("accessToken");
 
-  if(token){
-    return <Navigate to="/dashboard" replace/>
-  }
+  if (token) return <Navigate to="/dashboard" replace />;
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-     if (!formData.email || !formData.password) {
+    if (!formData.email || !formData.password) {
       setMessage("Please enter both username and password ❌");
       return;
     }
 
-
     try {
       setLoading(true);
-
-      const res = await loginUser({
-        email: formData.email,
-        password: formData.password,
-      });
-
-      // Save token from response
-      localStorage.setItem("accessToken", res.data.accessToken); // adjust if token key is different
-
+      const res = await loginUser(formData);
+      localStorage.setItem("accessToken", res.data.accessToken);
       setMessage("Login successful ✅");
-      navigate("/dashboard"); // redirect
+      navigate("/dashboard");
     } catch (err) {
-      console.log(err.response); // debug
+      console.log(err.response);
       setMessage(err.response?.data?.message || "Login failed ❌");
-    } finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
-  if(loading){
-    return(
-        <Loader />
-    )
-  }
+  if (loading) return <Loader />;
 
   return (
-
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4">
       <h2 className="text-white text-4xl mb-2 mt-2 text-center">Welcome to</h2>
       <img
@@ -64,7 +47,7 @@ export default function Login() {
         alt="Unique Health & Fitness Logo"
         className="w-50 object-contain mb-6 mx-auto"
       />
-      <div className="bg-[#10151F] rounded-xl shadow-lg p-8 w-full max-w-sm flex flex-col gap-4">
+      <div className="bg-[#10151F] rounded-xl shadow-lg p-8 w-full max-w-sm flex flex-col gap-4 relative">
         <label className="text-white text-sm font-semibold" htmlFor="username">
           Username
         </label>
@@ -74,20 +57,30 @@ export default function Login() {
           placeholder="Enter your username"
           className="bg-[#232A36] text-white rounded-md px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           value={formData.email}
-          onChange={(e)=>setFormData({...formData, email:e.target.value})}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
         />
+
         <label className="text-white text-sm font-semibold" htmlFor="password">
           Password
         </label>
-        <input
-          id="password"
-          type="password"
-          placeholder="Enter your password"
-          className="bg-[#232A36] text-white rounded-md px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-          value={formData.password}
-          onChange={(e)=>setFormData({...formData, password: e.target.value})}
-        />
-        < Button content="Login" onClick={handleLogin} />
+        <div className="relative">
+          <input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter your password"
+            className="bg-[#232A36] text-white rounded-md px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          />
+          <span
+            className="absolute right-5 top-5 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
+
+        <Button content="Login" onClick={handleLogin} />
         <div className="flex justify-between items-center mt-2 text-sm">
           <Link to="/forgot-password" className="text-white hover:underline">
             Forgot Password?

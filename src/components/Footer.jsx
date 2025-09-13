@@ -9,10 +9,10 @@ export default function Footer() {
         <span className="font-bold text-lg tracking-widest">UNIQUE FITNESS</span>
       </div>
       <div className="flex flex-col md:flex-row gap-6 mb-4 md:mb-0 items-center">
-        <Link href="/dashboard" className="hover:text-[#EAB308] transition">Home</Link>
-        <Link href="/about" className="hover:text-[#EAB308] transition">About</Link>
-        <Link href="/contact" className="hover:text-[#EAB308] transition">Contact</Link>
-        <Link href="/privacy" className="hover:text-[#EAB308] transition">Privacy</Link>
+        <Link to="/dashboard" className="hover:text-[#EAB308] transition">Home</Link>
+        <Link to="/about" className="hover:text-[#EAB308] transition">About</Link>
+        <Link to="/contact" className="hover:text-[#EAB308] transition">Contact</Link>
+        <Link to="/privacy" className="hover:text-[#EAB308] transition">Privacy</Link>
         <span className="text-xs md:text-sm text-gray-300 mt-2 md:mt-0 md:ml-6 text-center md:text-left">
           Unique Health and Gitness Gym, 2nd Floor, Moule Hall, Anand Chaya, Satpur, Nashik, 422012
         </span>

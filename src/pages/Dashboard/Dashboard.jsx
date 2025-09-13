@@ -1,13 +1,62 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaUser, FaDumbbell, FaRunning, FaBicycle, FaBullhorn, FaAppleAlt, FaChartLine, FaCreditCard } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import Loader from "../../components/Loader";
 
 export default function Dashboard() {
+
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false)
+
+  function handleRenew(){
+    try {
+      setLoading(true)
+
+      navigate("/price-plan");
+    } catch (error) {
+      console.log(error?.response?.data)
+    } finally{
+      setLoading(false)
+    }
+  }
+
+  function handleWorkout(){
+    try {
+      setLoading(true)
+
+      navigate("/workout")
+    } catch (error) {
+      console.log(error?.response?.data)
+    }
+    finally{
+      setLoading(false)
+    }
+  }
+
+  function handleProfile(){
+    try {
+      setLoading(true)
+
+      navigate("/profile")
+    } catch (error) {
+      console.log(error?.response?.data)
+    } finally{
+      setLoading(false)
+    }
+  }
+
+  if(loading){
+    return(
+      <Loader />
+    )
+  }
+
   return (
     <div className="min-h-screen bg-[#181A1B] px-2 py-6 md:px-4 md:py-8">
       <div className="flex flex-col gap-4 items-start max-w-7xl mx-auto w-full">
         {/* Profile Section */}
         <div className="flex flex-col md:flex-row items-center gap-6 mb-4 w-full">
-          <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center text-gray-400 text-lg font-bold">
+          <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center text-gray-400 text-lg font-bold cursor-pointer" onClick={handleProfile}>
             <FaUser className="text-4xl" />
           </div>
           <div className="flex-1">
@@ -25,7 +74,8 @@ export default function Dashboard() {
               <span className="flex items-center gap-2"><FaRunning className="text-[#EAB308]" /> Running</span>
               <span className="flex items-center gap-2"><FaBicycle className="text-[#EAB308]" /> Cycling</span>
             </div>
-            <button className="mt-4 bg-[#EAB308] text-black font-bold rounded-md py-2 px-4 w-fit transition hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200">View All</button>
+            <button className="mt-4 bg-[#EAB308] text-black font-bold rounded-md py-2 px-4 w-fit transition hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200 cursor-pointer"
+            onClick={handleWorkout}>View All</button>
           </div>
           {/* Diet Plan */}
           <div className="bg-[#10151F] rounded-lg p-6 min-h-[180px]">
@@ -65,7 +115,8 @@ export default function Dashboard() {
             <h3 className="text-white font-bold mb-2 flex items-center gap-2"><FaCreditCard className="text-[#EAB308]" /> Payments & Membership</h3>
             <div className="text-gray-300">Current Plan: Gold</div>
             <div className="text-gray-300">Expiry Date: 2024-01-15</div>
-            <button className="mt-4 bg-[#EAB308] text-black font-bold rounded-md py-2 px-4 w-fit transition hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200">Renew/Upgrade</button>
+            <button className="mt-4 bg-[#EAB308] text-black font-bold rounded-md py-2 px-4 w-fit transition hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200 cursor-pointer"
+            onClick={handleRenew}>Renew/Upgrade</button>
           </div>
         </div>
       </div>

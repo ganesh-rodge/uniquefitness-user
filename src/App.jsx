@@ -50,27 +50,27 @@ function App() {
               <Route path="/announcements" element={<Announcements />} />
               <Route path="/announcement-details" element={<AnnouncementDetails />} />
               <Route path="/weight-records" element={<WeightHistory />} />
-              <Route path="/select-plan" element={<SelectPlan />} />
+              <Route path="/price-plan" element={<SelectPlan />} />
               <Route path="/select-groups" element={<SelectGroups />} />
               <Route path="/create-schedule" element={<CreateSchedule />} />
-              <Route path="/workout-detail" element={<WorkoutDetail/>} />
+              <Route path="/workout" element={<WorkoutDetail/>} />
               <Route path="/create-diet" element={<CreateDiet/>} />
-              <Route path="/diet-plan" element={<Dietplan/>} />
+              <Route path="/diet" element={<Dietplan/>} />
               <Route path="/diet-detail" element={<DietDetail/>} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/change-password" element={<ChangePassword />} />
             </Route>
           </Route>
 
           {/* Public Routes */}
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/livePhoto" element={<LivePhoto />} />
+          <Route path="/live-photo" element={<LivePhoto />} />
           <Route path="/aadhar" element={<Aadhaar />} />
           <Route path="/forgotPassword" element={<ForgotPassword />} />
           <Route path="/ResetPassword" element={<ResetPassword />} />
           <Route path="/details" element={<GetDetails />} />
           <Route path="/physicalDetails" element={<HeightWeight />} />
-          <Route path="/changePassword" element={<ChangePassword />} />
           <Route element={<Layout />}>
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />

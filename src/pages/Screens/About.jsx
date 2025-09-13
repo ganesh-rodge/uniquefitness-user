@@ -12,7 +12,7 @@ export default function About() {
         <h1 className="text-white text-3xl font-bold mb-2 text-center">
           About Unique Health & Fitness Gym in Nashik
         </h1>
-        <p className="text-gray-300 text-center text-lg mb-2">
+        <p className="text-gray-300 text-center text-lg mb-2 justify-start">
           Unique Health and Fitness Gym, the best gym in Nashik, was founded by
           Amit Kanse in 2018 with the vision to provide a modern, motivating, and
           supportive environment for fitness enthusiasts in Nashik. We offer

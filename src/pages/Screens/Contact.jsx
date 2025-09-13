@@ -25,7 +25,7 @@ export default function Contact() {
           </div>
           <div className="flex items-center gap-2 text-lg text-white whitespace-nowrap">
             <FaEnvelope className="text-[#EAB308]" />
-            <span>uniquefitness@gmail.com</span>
+            <span>uniquehealthfitness@gmail.com</span>
           </div>
           <a
             href="https://chat.whatsapp.com/your-group-link"

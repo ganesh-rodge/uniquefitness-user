@@ -28,14 +28,7 @@ export default function Profile() {
       setLoading(true)
       const token = localStorage.getItem("accessToken")
 
-      await fetch("https://uniquefitness.onrender.com/api/v1/user/logout", {
-        method: 'POST',
-        headers: {
-          "Content-Type" : "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
-      })
+      
 
       localStorage.removeItem("accessToken");
       localStorage.removeItem("userData");
@@ -66,6 +59,19 @@ export default function Profile() {
     setEditValue("");
   };
 
+  const handlePassword = () =>{
+    try{
+      setLoading(true)
+
+      navigate("/change-password")
+    } catch(error){
+      console.log(error?.response?.data)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4">
       <h1 className="text-white text-4xl font-bold mb-1 text-center">My Profile</h1>
@@ -75,9 +81,7 @@ export default function Profile() {
           <div className="w-36 h-36 rounded-full bg-gray-300 flex items-center justify-center text-gray-400 text-xl font-bold">
             150 × 150
           </div>
-          <button className="absolute right-2 bottom-2 bg-[#EAB308] rounded-full p-2 shadow-lg border-2 border-white">
-            <FaCamera className="text-white text-lg" />
-          </button>
+
         </div>
         <div className="w-full text-white text-base flex flex-col gap-2">
           <div className="flex items-center gap-2"><span className="text-gray-400 w-32">Name:</span><span className="flex-1">{profile.name}</span></div>
@@ -154,7 +158,8 @@ export default function Profile() {
           onClick={handleLogout}>
             Log Out
           </button>
-          <button className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-1/2 transition hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200">
+          <button className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-1/2 transition hover:bg-yellow-400 transform hover:scale-105 active:scale-95 duration-200"
+          onClick={handlePassword}>
             Change Password
           </button>
         </div>

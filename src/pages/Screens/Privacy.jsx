@@ -16,7 +16,7 @@ export default function Privacy() {
           <li>Our website may use cookies to enhance your browsing experience.</li>
         </ul>
         <p className="text-gray-300 text-center text-base mt-4">
-          If you have any questions about our privacy policy, please contact us at <span className="text-[#EAB308]">uniquefitness@gmail.com</span>.
+          If you have any questions about our privacy policy, please contact us at <span className="text-[#EAB308]">uniquehealthfitness@gmail.com</span>.
         </p>
       </div>
     </div>
