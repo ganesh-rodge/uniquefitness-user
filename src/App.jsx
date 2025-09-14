@@ -40,7 +40,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 function App() {
   return (
-    <BrowserRouter>
+    
       <Suspense fallback={<Loader/>}>
         <Routes>
           {/* Protected Routes */}
@@ -70,7 +70,7 @@ function App() {
           <Route path="/forgotPassword" element={<ForgotPassword />} />
           <Route path="/ResetPassword" element={<ResetPassword />} />
           <Route path="/details" element={<GetDetails />} />
-          <Route path="/physicalDetails" element={<HeightWeight />} />
+          <Route path="/physical-details" element={<HeightWeight />} />
           <Route element={<Layout />}>
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
@@ -81,7 +81,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
-    </BrowserRouter>
+    
   );
 }
 

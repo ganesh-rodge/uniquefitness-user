@@ -1,14 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useRegistration } from "../../context/RegistrationContext";
+import { useNavigate } from "react-router-dom";
 
 export default function LivePhoto() {
+  const { registrationData, updateRegistrationData } = useRegistration();
+  const navigate = useNavigate();
+
   const [stream, setStream] = useState(null);
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState(registrationData.livePhoto || null);
   const [error, setError] = useState("");
   const [faceDetected, setFaceDetected] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const intervalRef = useRef(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   // Load face-api.js dynamically
   useEffect(() => {
@@ -82,14 +88,9 @@ export default function LivePhoto() {
               })
             );
 
-            if (Array.isArray(detections) && detections.length > 0) {
-              setFaceDetected(true);
-              setError("");
-            } else {
-              setFaceDetected(false);
-            }
+            setFaceDetected(Array.isArray(detections) && detections.length > 0);
           }
-        }, 200); // smoother detection
+        }, 200);
       } catch (err) {
         setError(
           "Camera permission denied. Please allow camera access in your browser settings."
@@ -138,6 +139,19 @@ export default function LivePhoto() {
       intervalRef.current = null;
     }
     setFaceDetected(false);
+  };
+
+  const handleNext = () => {
+    if (!image) {
+      setError("Please capture your live photo before proceeding.");
+      return;
+    }
+
+    // Save captured photo to context
+    updateRegistrationData({ livePhotoUrl: image });
+
+    // Navigate to Aadhaar upload page
+    navigate("/aadhar");
   };
 
   return (
@@ -235,7 +249,7 @@ export default function LivePhoto() {
               Retake
             </button>
             <button
-              onClick={() => console.log("Next clicked")}
+              onClick={handleNext}
               className="bg-blue-600 text-white font-bold rounded-md py-3 w-full transition-transform hover:bg-blue-500 transform hover:scale-105 active:scale-95 duration-200"
             >
               Next

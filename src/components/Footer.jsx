@@ -18,7 +18,7 @@ export default function Footer() {
         </span>
       </div>
       <div className="flex gap-4">
-        <a href="#" aria-label="Instagram" className="hover:text-[#EAB308] transition transform hover:scale-110 active:scale-95 duration-200"><FaInstagram size={22} /></a>
+        <a href="https://www.instagram.com/unique_health_fitness/" aria-label="Instagram" className="hover:text-[#EAB308] transition transform hover:scale-110 active:scale-95 duration-200"><FaInstagram size={22} /></a>
         <a href="#" aria-label="Facebook" className="hover:text-[#EAB308] transition transform hover:scale-110 active:scale-95 duration-200"><FaFacebookF size={22} /></a>
         <a href="#" aria-label="Twitter" className="hover:text-[#EAB308] transition transform hover:scale-110 active:scale-95 duration-200"><FaTwitter size={22} /></a>
         <a href="#" aria-label="WhatsApp" className="hover:text-[#EAB308] transition transform hover:scale-110 active:scale-95 duration-200"><FaWhatsapp size={22} /></a>

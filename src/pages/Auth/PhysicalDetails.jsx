@@ -1,16 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useRegistration } from "../../context/RegistrationContext";
 
-export default function HeightWeight() {
-  const [form, setForm] = useState({ height: "", weight: "", gender: "male" });
+export default function PhysicalDetails() {
+  const { registrationData, updateRegistrationData } = useRegistration();
+  const navigate = useNavigate();
 
-  const handleChange = e => {
+  const [form, setForm] = useState({
+    height: registrationData.height || "",
+    weight: registrationData.weight || "",
+    gender: registrationData.gender || "male",
+  });
+
+  // ✅ New state to track if we should navigate
+  const [shouldNavigate, setShouldNavigate] = useState(false);
+
+  // ✅ useEffect to watch for context changes and navigate
+  useEffect(() => {
+    // This condition checks if we're ready to navigate AND if the context has been updated with the height
+    if (shouldNavigate && registrationData.height === form.height) {
+      navigate("/live-photo");
+    }
+  }, [shouldNavigate, registrationData, form, navigate]);
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
+
+    // 1. Update context with the new form data
+    updateRegistrationData(form);
+
+    // 2. Set the flag to true. This will trigger the useEffect.
+    setShouldNavigate(true);
   };
 
   return (
@@ -92,7 +117,7 @@ export default function HeightWeight() {
           type="submit"
           className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-full transition hover:bg-yellow-400 transform hover:scale-110 active:scale-95 duration-200 mt-2"
         >
-          Submit
+          Next
         </button>
       </form>
     </div>

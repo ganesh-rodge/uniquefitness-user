@@ -2,23 +2,30 @@ import axios from "axios";
 
 const API = axios.create({
   baseURL: "https://uniquefitness.onrender.com/api/v1",
+  withCredentials: true
 });
 
 // Add Authorization header automatically if token is present
 API.interceptors.request.use((req) => {
-  const token = localStorage.getItem("accessToken"); // 🔑 match your Login.js
+  const token = localStorage.getItem("accessToken");
   if (token) {
     req.headers.Authorization = `Bearer ${token}`;
+    console.log("📌 Using token:", token);
   }
   return req;
 });
 
-// --- API Functions ---
+// --- Auth APIs ---
 export const loginUser = (formData) => API.post("/user/login", formData);
 
-// ✅ Add this function to fetch logged-in user's data
-export const getUserDetails = () => API.get("/user/get-user"); 
-// <-- Ensure your backend has `/user/me` or similar route
-// If your backend uses `/user/profile` or `/user/:id`, change this accordingly.
+export const changePassword = (formData) => 
+  API.patch("/user/change-password", formData);
+
+// ---OTP APIs ---
+// --- OTP APIs ---
+export const sendOtp = (email) => API.post("/user/send-otp", { email });
+export const verifyOtp = (email, otp) =>
+  API.post("/user/verify-otp", { email, otp });
+
 
 export default API;

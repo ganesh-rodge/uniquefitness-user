@@ -1,18 +1,65 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { sendOtp, verifyOtp } from "../../api/api";
+import { useRegistration } from "../../context/RegistrationContext";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
 
-  const handleSendOtp = (e) => {
+  const { updateRegistrationData } = useRegistration();
+  
+
+  const navigate = useNavigate();
+
+  // --- Handle Send OTP ---
+  const handleSendOtp = async (e) => {
     e.preventDefault();
-    // Send OTP logic
+    if (!email) return alert("Please enter your email");
+
+    try {
+      setLoading(true);
+      const res = await sendOtp(email);
+      if (res.data.success) {
+        alert(res.data.message); // you can replace with toast
+        setOtpSent(true);
+      }
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleContinue = (e) => {
-    e.preventDefault();
-    // Continue logic
-  };
+  // --- Handle Verify OTP ---
+  const handleContinue = async (e) => {
+  e.preventDefault();
+  if (!otp) return alert("Please enter OTP");
+
+  try {
+    setLoading(true);
+    const res = await verifyOtp(email, otp);
+    if (res.data.success) {
+      const signupToken = res.data.data.signupToken;
+      // Store token in localStorage
+      localStorage.setItem("signupToken", signupToken);
+
+      // ✅ Update the context with the new token
+      updateRegistrationData({ signupToken: signupToken });
+
+      alert("OTP verified successfully");
+      navigate("/details");
+    }
+  } catch (error) {
+    console.error(error);
+    alert(error.response?.data?.message || "Invalid OTP");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4">
@@ -25,44 +72,59 @@ export default function Register() {
         />
       </div>
       <form className="bg-[#10151F] rounded-xl shadow-lg p-8 w-full max-w-md flex flex-col gap-6 items-center">
+        {/* Email Input */}
         <div className="w-full flex flex-col gap-2">
-          <label className="text-white text-base font-semibold" htmlFor="email">Email Address</label>
+          <label className="text-white text-base font-semibold" htmlFor="email">
+            Email Address
+          </label>
           <input
             id="email"
             name="email"
             type="email"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
             className="bg-[#374151] text-white rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-yellow-400"
             required
           />
         </div>
+
+        {/* Send OTP */}
         <button
           className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-full transition hover:bg-yellow-400"
           onClick={handleSendOtp}
+          disabled={loading}
         >
-          Send OTP
+          {loading ? "Sending..." : "Send OTP"}
         </button>
-        <div className="w-full flex flex-col gap-2">
-          <label className="text-white text-base font-semibold" htmlFor="otp">OTP (6-digit)</label>
-          <input
-            id="otp"
-            name="otp"
-            type="text"
-            value={otp}
-            onChange={e => setOtp(e.target.value)}
-            placeholder="Enter OTP"
-            className="bg-[#374151] text-white rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            required
-          />
-        </div>
-        <button
-          className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-full transition hover:bg-yellow-400"
-          onClick={handleContinue}
-        >
-          Continue
-        </button>
+
+        {/* OTP Field - only show after OTP is sent */}
+        {otpSent && (
+          <>
+            <div className="w-full flex flex-col gap-2">
+              <label className="text-white text-base font-semibold" htmlFor="otp">
+                OTP (6-digit)
+              </label>
+              <input
+                id="otp"
+                name="otp"
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Enter OTP"
+                className="bg-[#374151] text-white rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                required
+              />
+            </div>
+            <button
+              className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-full transition hover:bg-yellow-400"
+              onClick={handleContinue}
+              disabled={loading}
+            >
+              {loading ? "Verifying..." : "Continue"}
+            </button>
+          </>
+        )}
       </form>
     </div>
   );

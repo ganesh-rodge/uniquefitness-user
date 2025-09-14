@@ -26,7 +26,11 @@ export default function Login() {
     try {
       setLoading(true);
       const res = await loginUser(formData);
-      localStorage.setItem("accessToken", res.data.accessToken);
+      localStorage.setItem("accessToken", res.data.data.accessToken);
+       const storedToken = localStorage.getItem("accessToken");
+      console.log("📌 Token stored in localStorage:", storedToken);
+      localStorage.setItem("refreshToken", res.data.data.refreshToken);
+
       setMessage("Login successful ✅");
       navigate("/dashboard");
     } catch (err) {
