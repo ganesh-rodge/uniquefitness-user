@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useRegistration } from "../../context/RegistrationContext";
 import { useNavigate } from "react-router-dom";
 import API from "../../api/api";
+import Loader from "../../components/Loader";
 
 const dataURLtoBlob = (dataurl) => {
   const arr = dataurl.split(',');
@@ -24,6 +25,8 @@ export default function AadhaarCapture() {
   const [stream, setStream] = useState(null);
   const [image, setImage] = useState(registrationData.aadhaarPhotoUrl || null); 
   const [error, setError] = useState("");
+
+  const [loading, setLoading] = useState(false)
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -97,6 +100,8 @@ export default function AadhaarCapture() {
     }
 
     try {
+
+      setLoading(true)
       const livePhotoBlob = dataURLtoBlob(livePhotoUrl);
       const aadhaarBlob = dataURLtoBlob(image); 
       const livePhotoFile = new File([livePhotoBlob], "live-photo.jpeg", { type: "image/jpeg" });
@@ -123,21 +128,35 @@ export default function AadhaarCapture() {
       });
       
       if (res.data.success) {
-        console.log("Registration successful:", res.data);
-        localStorage.removeItem('signupToken');
-        navigate("/dashboard");
-      } else {
+        console.log("Registration successful:", res.data);
+        localStorage.removeItem("signupToken");
+
+        // ✅ Save access token like login flow
+        if (res.data.data.accessToken) {
+        localStorage.setItem("accessToken", res.data.data.accessToken);
+        }
+
+        navigate("/dashboard");
+    } else {
         setError(res.data.message || "Registration failed.");
       }
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || "Failed to register. Please try again.");
-    }
+    } finally{
+    setLoading(false)
+}
   };
 
   useEffect(() => {
     return () => stopCamera();
   }, []);
+
+if(loading){
+    return(
+        < Loader />
+    )
+}
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4 font-sans">

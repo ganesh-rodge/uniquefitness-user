@@ -1,7 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React, { Suspense, lazy } from "react";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { Suspense, lazy } from "react";
+import RegistrationRoute from "./components/RegistrationRoute"; // 
+import { useRegistration } from "./context/RegistrationContext";
 import Loader from "./components/Loader";
 
 
@@ -39,11 +41,57 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 
 function App() {
+  const { registrationData } = useRegistration();
+
   return (
-    
-      <Suspense fallback={<Loader/>}>
+      <Suspense fallback={<Loader />}>
         <Routes>
-          {/* Protected Routes */}
+          {/* Public Routes */}
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgotPassword" element={<ForgotPassword />} />
+          <Route path="/ResetPassword" element={<ResetPassword />} />
+          <Route element={<Layout />}>
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy" element={<Privacy />} />
+          </Route>
+
+          {/* Registration Protected Routes */}
+          <Route 
+            path="/details" 
+            element={
+              <RegistrationRoute requiredCondition={registrationData.signupToken}>
+                <GetDetails />
+              </RegistrationRoute>
+            } 
+          />
+          <Route 
+            path="/physical-details" 
+            element={
+              <RegistrationRoute requiredCondition={registrationData.fullName && registrationData.password}>
+                <HeightWeight />
+              </RegistrationRoute>
+            } 
+          />
+          <Route 
+            path="/live-photo" 
+            element={
+              <RegistrationRoute requiredCondition={registrationData.height && registrationData.weight}>
+                <LivePhoto />
+              </RegistrationRoute>
+            } 
+          />
+          <Route 
+            path="/aadhar" 
+            element={
+              <RegistrationRoute requiredCondition={registrationData.livePhotoUrl}>
+                <Aadhaar />
+              </RegistrationRoute>
+            } 
+          />
+
+          {/* User Protected Routes (requires accessToken) */}
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
@@ -53,35 +101,19 @@ function App() {
               <Route path="/price-plan" element={<SelectPlan />} />
               <Route path="/select-groups" element={<SelectGroups />} />
               <Route path="/create-schedule" element={<CreateSchedule />} />
-              <Route path="/workout" element={<WorkoutDetail/>} />
-              <Route path="/create-diet" element={<CreateDiet/>} />
-              <Route path="/diet" element={<Dietplan/>} />
-              <Route path="/diet-detail" element={<DietDetail/>} />
+              <Route path="/workout" element={<WorkoutDetail />} />
+              <Route path="/create-diet" element={<CreateDiet />} />
+              <Route path="/diet" element={<Dietplan />} />
+              <Route path="/diet-detail" element={<DietDetail />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/change-password" element={<ChangePassword />} />
             </Route>
-          </Route>
-
-          {/* Public Routes */}
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/live-photo" element={<LivePhoto />} />
-          <Route path="/aadhar" element={<Aadhaar />} />
-          <Route path="/forgotPassword" element={<ForgotPassword />} />
-          <Route path="/ResetPassword" element={<ResetPassword />} />
-          <Route path="/details" element={<GetDetails />} />
-          <Route path="/physical-details" element={<HeightWeight />} />
-          <Route element={<Layout />}>
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy" element={<Privacy />} />
           </Route>
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
-    
   );
 }
 

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRegistration } from "../../context/RegistrationContext";
+import Loader from "../../components/Loader";
 
 export default function PhysicalDetails() {
   const { registrationData, updateRegistrationData } = useRegistration();
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     height: registrationData.height || "",
@@ -12,12 +15,9 @@ export default function PhysicalDetails() {
     gender: registrationData.gender || "male",
   });
 
-  // ✅ New state to track if we should navigate
   const [shouldNavigate, setShouldNavigate] = useState(false);
 
-  // ✅ useEffect to watch for context changes and navigate
   useEffect(() => {
-    // This condition checks if we're ready to navigate AND if the context has been updated with the height
     if (shouldNavigate && registrationData.height === form.height) {
       navigate("/live-photo");
     }
@@ -31,12 +31,20 @@ export default function PhysicalDetails() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // 1. Update context with the new form data
-    updateRegistrationData(form);
+    setLoading(true); // ✅ Show loader
 
-    // 2. Set the flag to true. This will trigger the useEffect.
-    setShouldNavigate(true);
+    // Simulate async operation (e.g., saving to context)
+    setTimeout(() => {
+      updateRegistrationData(form);
+      setShouldNavigate(true);
+      setLoading(false); // ✅ Hide loader after update
+    }, 300); // you can remove timeout if updateRegistrationData is sync
   };
+
+  // ✅ Show Loader if loading
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4">

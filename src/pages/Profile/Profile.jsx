@@ -28,8 +28,6 @@ export default function Profile() {
       setLoading(true)
       const token = localStorage.getItem("accessToken")
 
-      
-
       localStorage.removeItem("accessToken");
       localStorage.removeItem("userData");
 

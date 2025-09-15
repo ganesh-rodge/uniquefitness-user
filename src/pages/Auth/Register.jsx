@@ -1,18 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { sendOtp, verifyOtp } from "../../api/api";
 import { useRegistration } from "../../context/RegistrationContext";
+import Loader from "../../components/Loader";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [cooldown, setCooldown] = useState(0); // ⬅️ new state for cooldown
 
   const { updateRegistrationData } = useRegistration();
-  
-
   const navigate = useNavigate();
+
+  // ⬅️ Effect to decrease cooldown every second
+  useEffect(() => {
+    let timer;
+    if (cooldown > 0) {
+      timer = setInterval(() => setCooldown((prev) => prev - 1), 1000);
+    }
+    return () => clearInterval(timer);
+  }, [cooldown]);
 
   // --- Handle Send OTP ---
   const handleSendOtp = async (e) => {
@@ -25,6 +34,7 @@ export default function Register() {
       if (res.data.success) {
         alert(res.data.message); // you can replace with toast
         setOtpSent(true);
+        setCooldown(40); // ⬅️ start cooldown (40 sec)
       }
     } catch (error) {
       console.error(error);
@@ -36,30 +46,31 @@ export default function Register() {
 
   // --- Handle Verify OTP ---
   const handleContinue = async (e) => {
-  e.preventDefault();
-  if (!otp) return alert("Please enter OTP");
+    e.preventDefault();
+    if (!otp) return alert("Please enter OTP");
 
-  try {
-    setLoading(true);
-    const res = await verifyOtp(email, otp);
-    if (res.data.success) {
-      const signupToken = res.data.data.signupToken;
-      // Store token in localStorage
-      localStorage.setItem("signupToken", signupToken);
+    try {
+      setLoading(true);
+      const res = await verifyOtp(email, otp);
+      if (res.data.success) {
+        const signupToken = res.data.data.signupToken;
+        localStorage.setItem("signupToken", signupToken);
+        updateRegistrationData({ signupToken });
 
-      // ✅ Update the context with the new token
-      updateRegistrationData({ signupToken: signupToken });
-
-      alert("OTP verified successfully");
-      navigate("/details");
+        alert("OTP verified successfully");
+        navigate("/details");
+      }
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || "Invalid OTP");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error(error);
-    alert(error.response?.data?.message || "Invalid OTP");
-  } finally {
-    setLoading(false);
+  };
+
+  if (loading) {
+    return <Loader />;
   }
-};
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#181A1B] px-4">
@@ -91,11 +102,15 @@ export default function Register() {
 
         {/* Send OTP */}
         <button
-          className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-full transition hover:bg-yellow-400"
+          className="bg-[#EAB308] text-black font-bold rounded-md py-2 w-full transition hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleSendOtp}
-          disabled={loading}
+          disabled={loading || cooldown > 0}
         >
-          {loading ? "Sending..." : "Send OTP"}
+          {loading
+            ? "Sending..."
+            : cooldown > 0
+            ? `Resend OTP in ${cooldown}s`
+            : "Send OTP"}
         </button>
 
         {/* OTP Field - only show after OTP is sent */}
