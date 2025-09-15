@@ -83,8 +83,8 @@ export default function PhysicalDetails() {
             <input
               type="radio"
               name="gender"
-              value="male"
-              checked={form.gender === "male"}
+              value="Male"
+              checked={form.gender === "Male"}
               onChange={handleChange}
               className="accent-[#EAB308]"
             />
@@ -94,8 +94,8 @@ export default function PhysicalDetails() {
             <input
               type="radio"
               name="gender"
-              value="female"
-              checked={form.gender === "female"}
+              value="Female"
+              checked={form.gender === "Female"}
               onChange={handleChange}
               className="accent-[#EAB308]"
             />
@@ -105,8 +105,8 @@ export default function PhysicalDetails() {
             <input
               type="radio"
               name="gender"
-              value="other"
-              checked={form.gender === "other"}
+              value="Other"
+              checked={form.gender === "Other"}
               onChange={handleChange}
               className="accent-[#EAB308]"
             />

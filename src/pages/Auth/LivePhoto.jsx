@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useRegistration } from "../../context/RegistrationContext";
 import { useNavigate } from "react-router-dom";
+import * as faceapi from "face-api.js"; // Import face-api.js
 
 export default function LivePhoto() {
   const { registrationData, updateRegistrationData } = useRegistration();
   const navigate = useNavigate();
 
   const [stream, setStream] = useState(null);
-  const [image, setImage] = useState(registrationData.livePhoto || null);
+  const [image, setImage] = useState(registrationData.livePhotoUrl || null);
   const [error, setError] = useState("");
   const [faceDetected, setFaceDetected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,38 +17,21 @@ export default function LivePhoto() {
   const canvasRef = useRef(null);
   const intervalRef = useRef(null);
 
-  // Load face-api.js dynamically
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src =
-      "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js";
-    script.async = true;
-
-    script.onload = async () => {
+    const loadModels = async () => {
       try {
-        await window.faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+        await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
         setIsLoading(false);
       } catch (err) {
         console.error("Error loading face-api models:", err);
-        setError(
-          "Failed to load face detection models. Check your network connection."
-        );
+        setError("Failed to load face detection models. Check your network connection.");
         setIsLoading(false);
       }
     };
-
-    script.onerror = () => {
-      setError(
-        "Failed to load the face detection library. Check your network connection."
-      );
-      setIsLoading(false);
-    };
-
-    document.body.appendChild(script);
-
+    loadModels();
+    
     return () => {
-      document.body.removeChild(script);
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      stopCamera();
     };
   }, []);
 
@@ -56,10 +40,6 @@ export default function LivePhoto() {
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
-
-  useEffect(() => {
-    return () => stopCamera();
-  }, []);
 
   const startCamera = async () => {
     if (isLoading) {
@@ -80,9 +60,9 @@ export default function LivePhoto() {
 
         intervalRef.current = setInterval(async () => {
           if (videoRef.current) {
-            const detections = await window.faceapi.detectAllFaces(
+            const detections = await faceapi.detectAllFaces(
               videoRef.current,
-              new window.faceapi.TinyFaceDetectorOptions({
+              new faceapi.TinyFaceDetectorOptions({
                 inputSize: 224,
                 scoreThreshold: 0.5,
               })
@@ -92,9 +72,7 @@ export default function LivePhoto() {
           }
         }, 200);
       } catch (err) {
-        setError(
-          "Camera permission denied. Please allow camera access in your browser settings."
-        );
+        setError("Camera permission denied. Please allow camera access in your browser settings.");
         console.error(err);
       }
     }
@@ -102,9 +80,7 @@ export default function LivePhoto() {
 
   const takePhoto = () => {
     if (!faceDetected) {
-      setError(
-        "No face detected. Please align your face in the frame and try again."
-      );
+      setError("No face detected. Please align your face in the frame and try again.");
       return;
     }
 
@@ -159,7 +135,6 @@ export default function LivePhoto() {
       <div className="bg-[#10151F] rounded-xl shadow-lg p-8 w-full max-w-sm flex flex-col gap-4 items-center">
         <h2 className="text-white text-xl font-bold mb-4">Live Photo Capture</h2>
 
-        {/* Circular video/image container */}
         <div
           className={`w-48 h-48 rounded-full flex items-center justify-center overflow-hidden relative border-4 ${
             image
@@ -221,7 +196,6 @@ export default function LivePhoto() {
           </p>
         )}
 
-        {/* Main action button */}
         {!image && (
           <button
             onClick={stream ? takePhoto : startCamera}
@@ -236,7 +210,6 @@ export default function LivePhoto() {
           </button>
         )}
 
-        {/* When image is captured, show Retake + Next */}
         {image && (
           <div className="flex flex-col gap-3 w-full">
             <button

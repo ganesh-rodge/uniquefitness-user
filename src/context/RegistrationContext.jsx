@@ -13,7 +13,6 @@ export const RegistrationProvider = ({ children }) => {
     weight: "",
     gender: "",
     livePhotoUrl: "",
-    aadhaarPhotoUrl: "",
     signupToken: "",
   });
 
