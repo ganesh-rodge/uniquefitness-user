@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { sendOtp, verifyOtp } from "../../api/api";
 import { useRegistration } from "../../context/RegistrationContext";
 import Loader from "../../components/Loader";
+import { toast } from "react-toastify";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -26,19 +27,19 @@ export default function Register() {
   // --- Handle Send OTP ---
   const handleSendOtp = async (e) => {
     e.preventDefault();
-    if (!email) return alert("Please enter your email");
+    if (!email) return toast.warning("Please enter your email");
 
     try {
       setLoading(true);
       const res = await sendOtp(email);
       if (res.data.success) {
-        alert(res.data.message); // you can replace with toast
+        toast.info(res.data.message); // you can replace with toast
         setOtpSent(true);
         setCooldown(40); // ⬅️ start cooldown (40 sec)
       }
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || "Failed to send OTP");
+      toast.error(error.response?.data?.message || "Failed to send OTP");
     } finally {
       setLoading(false);
     }
@@ -47,7 +48,7 @@ export default function Register() {
   // --- Handle Verify OTP ---
   const handleContinue = async (e) => {
     e.preventDefault();
-    if (!otp) return alert("Please enter OTP");
+    if (!otp) return toast.warning("Please enter OTP");
 
     try {
       setLoading(true);
@@ -57,12 +58,12 @@ export default function Register() {
         localStorage.setItem("signupToken", signupToken);
         updateRegistrationData({ signupToken });
 
-        alert("OTP verified successfully");
+        toast.info("OTP verified successfully");
         navigate("/details");
       }
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || "Invalid OTP");
+      toast.error(error.response?.data?.message || "Invalid OTP");
     } finally {
       setLoading(false);
     }

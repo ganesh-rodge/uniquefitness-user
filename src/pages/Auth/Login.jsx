@@ -4,6 +4,7 @@ import { useNavigate, Navigate, Link } from "react-router-dom";
 import { loginUser } from "../../api/api";
 import Loader from "../../components/Loader";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import {toast} from 'react-toastify'
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -19,7 +20,7 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
-      setMessage("Please enter both username and password ❌");
+      setMessage("Please enter both email and password ❌");
       return;
     }
 
@@ -31,11 +32,11 @@ export default function Login() {
       console.log("📌 Token stored in localStorage:", storedToken);
       localStorage.setItem("refreshToken", res.data.data.refreshToken);
 
-      setMessage("Login successful ✅");
+      toast.success("Login successful ✅");
       navigate("/dashboard");
     } catch (err) {
       console.log(err.response);
-      setMessage(err.response?.data?.message || "Login failed ❌");
+      toast.error(err.response?.data?.message || "Login failed ❌");
     } finally {
       setLoading(false);
     }
@@ -52,13 +53,13 @@ export default function Login() {
         className="w-50 object-contain mb-6 mx-auto"
       />
       <div className="bg-[#10151F] rounded-xl shadow-lg p-8 w-full max-w-sm flex flex-col gap-4 relative">
-        <label className="text-white text-sm font-semibold" htmlFor="username">
-          Username
+        <label className="text-white text-sm font-semibold" htmlFor="email">
+          Email
         </label>
         <input
-          id="username"
+          id="email"
           type="text"
-          placeholder="Enter your username"
+          placeholder="Enter your Email Id"
           className="bg-[#232A36] text-white rounded-md px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -86,7 +87,7 @@ export default function Login() {
 
         <Button content="Login" onClick={handleLogin} />
         <div className="flex justify-between items-center mt-2 text-sm">
-          <Link to="/forgot-password" className="text-white hover:underline">
+          <Link to="/reset-password" className="text-white hover:underline">
             Forgot Password?
           </Link>
           <Link to="/register" className="text-[#EAB308] hover:underline font-semibold">

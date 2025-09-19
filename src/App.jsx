@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import RegistrationRoute from "./components/RegistrationRoute"; // 
 import { useRegistration } from "./context/RegistrationContext";
 import Loader from "./components/Loader";
+import {ToastContainer} from 'react-toastify'
 
 
 const Login = lazy(() => import("./pages/Auth/Login"));
@@ -38,19 +39,22 @@ const DietDetail = lazy(() => import("./pages/Dietplans/DeitDetail"));
 
 const Profile = lazy(() => import("./pages/Profile/Profile"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const OtpVerify = lazy(() => import("./pages/Auth/OtpVerify"))
 
 
 function App() {
   const { registrationData } = useRegistration();
 
   return (
+    <>
       <Suspense fallback={<Loader />}>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/forgotPassword" element={<ForgotPassword />} />
-          <Route path="/ResetPassword" element={<ResetPassword />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/otp-verify" element={<OtpVerify />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route element={<Layout />}>
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
@@ -114,6 +118,19 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}       // 3 seconds
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      </>
   );
 }
 

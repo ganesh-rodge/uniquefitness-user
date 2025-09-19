@@ -3,6 +3,7 @@ import { changePassword } from "../../api/api";
 import Loader from "../../components/Loader";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import {toast} from 'react-toastify'
 
 function AnimatedInput({ id, type, placeholder, name, value, onChange }) {
   const [focused, setFocused] = useState(false);
@@ -56,7 +57,7 @@ export default function ChangePassword() {
       console.log("📤 formData being sent:", formData);
 
       await changePassword(formData);
-      setMessage("Change Password successful ✅");
+      toast.success("Changed Password ✅");
       navigate("/dashboard");
     } catch (error) {
       console.log(error.response);
