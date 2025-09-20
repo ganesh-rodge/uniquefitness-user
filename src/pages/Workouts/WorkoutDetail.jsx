@@ -1,57 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../components/Loader";
+import { getUserSchedule } from "../../api/api";
 
-const schedule = {
-  Monday: ["Chest", "Triceps"],
-  Tuesday: ["Back", "Biceps"],
-  Wednesday: ["Legs"],
-  Thursday: ["Shoulders"],
-  Friday: ["Chest", "Triceps"],
-  Saturday: ["Cardio"],
-  Sunday: ["Rest day"],
-};
+const days = [
+  "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+];
 
 export default function WorkoutDetail() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [schedule, setSchedule] = useState({});
 
-  function handleEdit() {
-    try {
+  useEffect(() => {
+    const fetchSchedule = async () => {
       setLoading(true);
-      navigate("/create-schedule");
-    } catch (error) {
-      console.log(error?.response?.data);
-    } finally {
-      setLoading(false);
-    }
-  }
+      try {
+        const data = await getUserSchedule();
+        setSchedule(data);
+      } catch (err) {
+        console.error("❌ Fetch schedule error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (loading) {
-    return <Loader />;
-  }
+    fetchSchedule();
+  }, []);
+
+  const handleDayClick = (day) => {
+    navigate("/select-groups", {
+      state: { day, currentSelection: schedule[day.toLowerCase()] || [] },
+    });
+  };
+
+  if (loading) return <Loader />;
 
   return (
-    <div className="min-h-screen bg-[#181A1B] flex flex-col items-center justify-center px-2 py-8">
-      <div className="w-full max-w-md mx-auto bg-[#10151F] rounded-xl shadow-lg p-6 flex flex-col gap-4">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-white text-2xl font-bold">Workout Schedule</h2>
-          <button
-            className="bg-[#EAB308] text-black font-bold rounded-md px-4 py-2 transition hover:bg-yellow-400 cursor-pointer"
-            onClick={handleEdit}
-          >
-            Edit Schedule
-          </button>
-        </div>
-        <p className="text-gray-300 mb-2">Your weekly workout plan.</p>
-        <div className="flex flex-col gap-4 mb-4">
-          {Object.entries(schedule).map(([day, groups]) => (
-            <div key={day} className="bg-[#232A36] rounded-lg px-4 py-3 cursor-pointer">
-              <div className="text-[#EAB308] font-semibold mb-1">{day}</div>
-              <div className="text-white text-base">
-                {groups.map((g, idx) => (
-                  <div key={idx}>{g}</div>
-                ))}
+    <div className="min-h-screen bg-[#1C2128] flex flex-col items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md mx-auto bg-[#262B33] rounded-2xl shadow-2xl p-6 flex flex-col gap-5">
+        {/* Header */}
+        <h2 className="text-white text-2xl font-bold">Workout Schedule</h2>
+        <p className="text-gray-400 text-sm">Your weekly workout plan at a glance.</p>
+
+        {/* Days List */}
+        <div className="flex flex-col gap-3">
+          {days.map((day) => (
+            <div
+              key={day}
+              className="bg-[#32383F] rounded-xl px-4 py-3 cursor-pointer hover:bg-[#3B414A] transition-shadow shadow-sm flex flex-col gap-1"
+              onClick={() => handleDayClick(day)}
+            >
+              <div className="text-[#FACC15] font-semibold text-lg">{day}</div>
+              <div className="text-white text-sm">
+                {schedule[day.toLowerCase()]?.length > 0
+                  ? schedule[day.toLowerCase()].join(", ")
+                  : <span className="text-gray-500 italic">No muscle groups selected</span>}
               </div>
             </div>
           ))}

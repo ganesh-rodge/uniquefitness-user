@@ -26,11 +26,11 @@ const Dashboard = lazy(() => import("./pages/Dashboard/Dashboard"));
 const WeightHistory = lazy(() => import("./pages/Dashboard/WeightHistory"));
 
 const Announcements = lazy(() => import("./pages/Announcements/Announcements"));
-const AnnouncementDetails = lazy(() => import("./pages/Announcements/AnnouncementDetails"));
+// const AnnouncementDetails = lazy(() => import("./pages/Announcements/AnnouncementDetails"));
 
 const SelectPlan = lazy(() => import("./pages/Payments/SelectPlan"));
 const SelectGroups = lazy(() => import("./pages/Workouts/SelectGroups"));
-const CreateSchedule = lazy(() => import("./pages/Workouts/CreateSchedule"));
+// const CreateSchedule = lazy(() => import("./pages/Workouts/CreateSchedule"));
 const WorkoutDetail = lazy(() => import("./pages/Workouts/WorkoutDetail"));
 
 const CreateDiet = lazy(() => import("./pages/Dietplans/CreateDiet"));
@@ -100,11 +100,11 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/announcements" element={<Announcements />} />
-              <Route path="/announcement-details" element={<AnnouncementDetails />} />
+              {/* <Route path="/announcement-details" element={<AnnouncementDetails />} /> */}
               <Route path="/weight-records" element={<WeightHistory />} />
               <Route path="/price-plan" element={<SelectPlan />} />
               <Route path="/select-groups" element={<SelectGroups />} />
-              <Route path="/create-schedule" element={<CreateSchedule />} />
+              {/* <Route path="/create-schedule" element={<CreateSchedule />} /> */}
               <Route path="/workout" element={<WorkoutDetail />} />
               <Route path="/create-diet" element={<CreateDiet />} />
               <Route path="/diet" element={<Dietplan />} />

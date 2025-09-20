@@ -8,7 +8,7 @@ export default function Navbar() {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const navigate = useNavigate();
 	return (
-	<nav className="w-full flex justify-center items-center  bg-[#181A1B] pt-4 sticky top-0 left-0 z-50">
+	<nav className="w-full flex justify-center items-center  bg-[#1C2128] pt-4 sticky top-0 left-0 z-50">
 			<div
 				className="flex items-center justify-between w-[95%] px-5 py-1.5 rounded-3xl"
 				style={{

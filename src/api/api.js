@@ -34,7 +34,18 @@ export const resetPassword = (email, otp, newPassword) =>
 
 export const getProfile = () => API.get("/user/get-user");
 
-// ✅ Fixed: Upload photo using FormData
+// ✅ Update profile info (height, weight, address) - partial updates allowed
+export const updateProfile = async (data) => {
+  try {
+    const response = await API.patch("/user/update-info", data);
+    return response.data;
+  } catch (error) {
+    console.error("📌 Profile update API error:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+// ✅ Upload photo using FormData
 export const updatePhoto = async (file) => {
   try {
     const formData = new FormData();
@@ -52,5 +63,38 @@ export const updatePhoto = async (file) => {
     throw error;
   }
 };
+
+export const getAnnouncements = async () => {
+  try {
+    const response = await API.get("/announcement");
+    return response.data; // will contain { statusCode, data, message, success }
+  } catch (error) {
+    console.error("📢 Announcements fetch error:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+// --- Workout APIs ---
+export const getUserSchedule = async () => {
+  try {
+    const response = await API.get("/workout/");
+    // Return the actual schedule object
+    return response.data.message || {}; // ✅ access the "message" field
+  } catch (error) {
+    console.error("📌 Get schedule error:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+export const updateUserSchedule = async (schedule) => {
+  try {
+    const response = await API.patch("/workout", schedule);
+    return response.data;
+  } catch (error) {
+    console.error("📌 Update schedule error:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
 
 export default API;
